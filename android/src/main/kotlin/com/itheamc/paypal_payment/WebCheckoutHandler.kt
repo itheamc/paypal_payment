@@ -19,13 +19,27 @@ import com.paypal.android.paypalwebpayments.PayPalWebCheckoutFundingSource
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutRequest
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 
+/**
+ * Handles PayPal web checkout flow.
+ *
+ * @property paypalPaymentConfig The configuration for PayPal payments.
+ * @property activity The current Android activity.
+ * @property binding The Flutter plugin binding.
+ */
 class WebCheckoutHandler(
     private val paypalPaymentConfig: PaypalPaymentConfig?,
     private val activity: Activity?,
     private val binding: FlutterPlugin.FlutterPluginBinding?,
 ) : PayPalPaymentWebCheckoutHostApi {
 
+    /**
+     * The client for handling PayPal web checkout.
+     */
     private var checkoutClient: PayPalWebCheckoutClient? = null
+
+    /**
+     * The listener for checkout result events.
+     */
     private var listener: CheckoutResultEventListener? = null
 
     init {
@@ -34,6 +48,14 @@ class WebCheckoutHandler(
         }
     }
 
+    /**
+     * Initiates the PayPal web checkout.
+     *
+     * @param orderId The ID of the order to be processed.
+     * @param fallbackUrl The URL to fall back to after the checkout process.
+     * @param fundingSource The funding source for the payment.
+     * @throws FlutterError if the activity, binding, or PayPal configuration is null.
+     */
     override fun initiateCheckout(
         orderId: String,
         fallbackUrl: String,
@@ -107,6 +129,12 @@ class WebCheckoutHandler(
         )
     }
 
+    /**
+     * Handles the result from the PayPal web checkout flow.
+     *
+     * @param intent The intent containing the result data.
+     * @return `true` if the intent was handled, `false` otherwise.
+     */
     fun onNewIntent(intent: Intent): Boolean {
         if (intent.action == Intent.ACTION_VIEW && intent.scheme == "itheamc") {
 
@@ -154,6 +182,11 @@ class WebCheckoutHandler(
         return false
     }
 
+    /**
+     * Converts a string to a [PayPalWebCheckoutFundingSource].
+     *
+     * @return The corresponding [PayPalWebCheckoutFundingSource], or [PayPalWebCheckoutFundingSource.PAYPAL] if the string is not recognized.
+     */
     private fun String.toPayPalWebCheckoutFundingSource(): PayPalWebCheckoutFundingSource {
         return when (this) {
             "paypal" -> PayPalWebCheckoutFundingSource.PAYPAL
@@ -163,6 +196,9 @@ class WebCheckoutHandler(
         }
     }
 
+    /**
+     * An event listener for PayPal web checkout results.
+     */
     private class CheckoutResultEventListener : PayPalWebCheckoutResultEventStreamHandler() {
         private var eventSink: PigeonEventSink<PayPalWebCheckoutResultEvent>? = null
 
@@ -174,6 +210,12 @@ class WebCheckoutHandler(
             eventSink = null
         }
 
+        /**
+         * Handles a successful checkout.
+         *
+         * @param orderId The ID of the order.
+         * @param payerId The ID of the payer.
+         */
         fun onSuccess(
             orderId: String?,
             payerId: String?
@@ -188,6 +230,14 @@ class WebCheckoutHandler(
             end()
         }
 
+        /**
+         * Handles a failed checkout.
+         *
+         * @param orderId The ID of the order.
+         * @param reason The reason for the failure.
+         * @param code The error code.
+         * @param correlationId The correlation ID for the request.
+         */
         fun onFailure(
             orderId: String?,
             reason: String,
@@ -206,6 +256,11 @@ class WebCheckoutHandler(
             end()
         }
 
+        /**
+         * Handles a canceled checkout.
+         *
+         * @param orderId The ID of the order.
+         */
         fun onCanceled(orderId: String?) {
             eventSink?.success(
                 PayPalWebCheckoutCanceledResultEvent(
@@ -216,6 +271,11 @@ class WebCheckoutHandler(
             end()
         }
 
+        /**
+         * Handles an error during checkout.
+         *
+         * @param error The error message.
+         */
         fun onError(error: String) {
             eventSink?.success(
                 PayPalWebCheckoutErrorResultEvent(
@@ -226,6 +286,9 @@ class WebCheckoutHandler(
             end()
         }
 
+        /**
+         * Ends the event stream.
+         */
         private fun end() {
             eventSink?.endOfStream()
             eventSink = null

@@ -1,38 +1,106 @@
 package com.itheamc.paypal_payment
 
+import PaypalPaymentHostApi
+import android.app.Activity
+import android.content.Intent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener
 
-/** PaypalPaymentPlugin */
+/**
+ * The main plugin class for the paypal_payment Flutter plugin.
+ *
+ * This class handles the communication with the Flutter side and manages the Android lifecycle.
+ */
 class PaypalPaymentPlugin :
     FlutterPlugin,
-    MethodCallHandler {
-    // The MethodChannel that will the communication between Flutter and native Android
-    //
-    // This local reference serves to register the plugin with the Flutter Engine and unregister it
-    // when the Flutter Engine is detached from the Activity
-    private lateinit var channel: MethodChannel
+    ActivityAware,
+    NewIntentListener,
+    PaypalPaymentHostApi {
 
-    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "paypal_payment")
-        channel.setMethodCallHandler(this)
+    /** The current Android [Activity]. */
+    private var activity: Activity? = null
+    /** The binding to the Flutter engine. */
+    private var pluginBinding: FlutterPlugin.FlutterPluginBinding? = null
+    /** The binding to the activity. */
+    private var activityPluginBinding: ActivityPluginBinding? = null
+    /** The handler for web-based PayPal checkout. */
+    private var webCheckoutHandler: WebCheckoutHandler? = null
+
+    /** The configuration for the PayPal payment. */
+    private var paypalPaymentConfig: PaypalPaymentConfig? = null
+
+
+    /**
+     * Called when the plugin is attached to the Flutter engine.
+     */
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        pluginBinding = binding
+        PaypalPaymentHostApi.setUp(binding.binaryMessenger, this)
     }
 
-    override fun onMethodCall(
-        call: MethodCall,
-        result: Result
-    ) {
-        if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else {
-            result.notImplemented()
-        }
-    }
-
+    /**
+     * Called when the plugin is detached from the Flutter engine.
+     */
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        pluginBinding = null
+        paypalPaymentConfig = null
+    }
+
+
+    /**
+     * Called when the plugin is attached to an activity.
+     */
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activityPluginBinding = binding
+        activity = binding.activity
+        webCheckoutHandler = WebCheckoutHandler(paypalPaymentConfig, activity, pluginBinding)
+        binding.addOnNewIntentListener(this)
+    }
+
+    /**
+     * Called when the plugin is detached from an activity.
+     */
+    override fun onDetachedFromActivity() {
+        activityPluginBinding?.removeOnNewIntentListener(this)
+
+        activityPluginBinding = null
+        activity = null
+        webCheckoutHandler = null
+    }
+
+    /**
+     * Called when the activity is reattached after a configuration change.
+     */
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        onAttachedToActivity(binding)
+    }
+
+    /**
+     * Called when the activity is detached for a configuration change.
+     */
+    override fun onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity()
+    }
+
+    /**
+     * Called when a new intent is received.
+     *
+     * @param intent The new intent.
+     * @return True if the intent was handled, false otherwise.
+     */
+    override fun onNewIntent(intent: Intent): Boolean {
+        return webCheckoutHandler?.onNewIntent(intent) ?: false
+    }
+
+    /**
+     * Initializes the PayPal payment configuration.
+     *
+     * @param clientId The PayPal client ID.
+     * @param environment The PayPal environment ("live" or "sandbox").
+     */
+    override fun init(clientId: String, environment: String) {
+        paypalPaymentConfig = PaypalPaymentConfig(clientId, environment)
     }
 }

@@ -19,7 +19,6 @@ class PaypalPaymentPlugin :
     private var activity: Activity? = null
     private var pluginBinding: FlutterPlugin.FlutterPluginBinding? = null
     private var activityPluginBinding: ActivityPluginBinding? = null
-    private var platformViewRegistry: PlatformViewRegistry? = null
     private var webCheckoutHandler: WebCheckoutHandler? = null
 
     private var paypalPaymentConfig: PaypalPaymentConfig? = null
@@ -27,12 +26,10 @@ class PaypalPaymentPlugin :
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         pluginBinding = binding
-        platformViewRegistry = binding.platformViewRegistry
         PaypalPaymentHostApi.setUp(binding.binaryMessenger, this)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        platformViewRegistry = null
         pluginBinding = null
         paypalPaymentConfig = null
     }

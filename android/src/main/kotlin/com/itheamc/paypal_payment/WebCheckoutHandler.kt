@@ -85,8 +85,8 @@ class WebCheckoutHandler(
         checkoutClient?.start(
             activity = activity,
             request = PayPalWebCheckoutRequest(
-                orderId = "YOUR_ORDER_ID",
-                fundingSource = PayPalWebCheckoutFundingSource.PAYPAL
+                orderId = orderId,
+                fundingSource = fundingSource.toPayPalWebCheckoutFundingSource()
             ),
             callback = { result ->
                 when (result) {
@@ -112,7 +112,7 @@ class WebCheckoutHandler(
 
             intent.data?.let {
                 // STEP 5: Finish Start Checkout
-                when (val result = checkoutClient?.finishStart(Intent())) {
+                when (val result = checkoutClient?.finishStart(intent)) {
                     is PayPalWebCheckoutFinishStartResult.Canceled -> {
                         listener?.onCanceled(
                             orderId = result.orderId,
@@ -121,7 +121,7 @@ class WebCheckoutHandler(
 
                     is PayPalWebCheckoutFinishStartResult.Failure -> {
                         listener?.onFailure(
-                            orderId = null,
+                            orderId = result.orderId,
                             reason = result.error.errorDescription,
                             code = result.error.code,
                             correlationId = result.error.correlationId
@@ -152,6 +152,15 @@ class WebCheckoutHandler(
             return true
         }
         return false
+    }
+
+    private fun String.toPayPalWebCheckoutFundingSource(): PayPalWebCheckoutFundingSource {
+        return when (this) {
+            "paypal" -> PayPalWebCheckoutFundingSource.PAYPAL
+            "credit" -> PayPalWebCheckoutFundingSource.PAYPAL_CREDIT
+            "paylater" -> PayPalWebCheckoutFundingSource.PAY_LATER
+            else -> PayPalWebCheckoutFundingSource.PAYPAL
+        }
     }
 
     private class CheckoutResultEventListener : PayPalWebCheckoutResultEventStreamHandler() {

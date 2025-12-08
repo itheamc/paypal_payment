@@ -183,20 +183,6 @@ class WebCheckoutHandler(
     }
 
     /**
-     * Converts a string to a [PayPalWebCheckoutFundingSource].
-     *
-     * @return The corresponding [PayPalWebCheckoutFundingSource], or [PayPalWebCheckoutFundingSource.PAYPAL] if the string is not recognized.
-     */
-    private fun String.toPayPalWebCheckoutFundingSource(): PayPalWebCheckoutFundingSource {
-        return when (this) {
-            "paypal" -> PayPalWebCheckoutFundingSource.PAYPAL
-            "credit" -> PayPalWebCheckoutFundingSource.PAYPAL_CREDIT
-            "paylater" -> PayPalWebCheckoutFundingSource.PAY_LATER
-            else -> PayPalWebCheckoutFundingSource.PAYPAL
-        }
-    }
-
-    /**
      * An event listener for PayPal web checkout results.
      */
     private class CheckoutResultEventListener : PayPalWebCheckoutResultEventStreamHandler() {
@@ -293,5 +279,20 @@ class WebCheckoutHandler(
             eventSink?.endOfStream()
             eventSink = null
         }
+    }
+}
+
+
+/**
+ * Converts a string to a [PayPalWebCheckoutFundingSource].
+ *
+ * @return The corresponding [PayPalWebCheckoutFundingSource], or [PayPalWebCheckoutFundingSource.PAYPAL] if the string is not recognized.
+ */
+private fun String.toPayPalWebCheckoutFundingSource(): PayPalWebCheckoutFundingSource {
+    return when (this) {
+        "paypal" -> PayPalWebCheckoutFundingSource.PAYPAL
+        "credit" -> PayPalWebCheckoutFundingSource.PAYPAL_CREDIT
+        "paylater" -> PayPalWebCheckoutFundingSource.PAY_LATER
+        else -> PayPalWebCheckoutFundingSource.PAYPAL
     }
 }

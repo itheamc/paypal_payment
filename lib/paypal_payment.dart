@@ -46,11 +46,11 @@ export 'src/api/transactions/models/responses/transactions_list_response.dart'
         TaxAmount,
         PayerInfo,
         PayerName,
-        TransactionDetail,
         AuctionInfo,
         CartInfo,
         ItemDetail,
         EInfo,
         ShippingInfo,
-        Address,
-        TransactionInfo;
+        Address;
+
+export 'src/widgets/paypal_checkout_page.dart';

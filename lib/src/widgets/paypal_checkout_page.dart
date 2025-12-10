@@ -105,7 +105,13 @@ class _PaypalCheckoutPageState extends State<PaypalCheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout'), centerTitle: true),
+      extendBody: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Checkout'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+      ),
       body: WebViewWidget(controller: _controller),
     );
   }

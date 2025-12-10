@@ -53,7 +53,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           const SizedBox(height: 20),
           DropdownButtonFormField<OrderIntent>(
-            value: _selectedIntent,
+            initialValue: _selectedIntent,
             decoration: const InputDecoration(
               labelText: "Order Intent",
               border: OutlineInputBorder(),

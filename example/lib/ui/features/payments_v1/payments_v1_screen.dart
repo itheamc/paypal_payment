@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:paypal_payment/paypal_payment.dart';
 import '../../common/response_viewer.dart';
 
@@ -52,7 +51,7 @@ class _PaymentsV1ScreenState extends State<PaymentsV1Screen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DropdownButtonFormField<PaymentIntent>(
-            value: _selectedIntent,
+            initialValue: _selectedIntent,
             decoration: const InputDecoration(
               labelText: "Payment Intent",
               border: OutlineInputBorder(),

@@ -123,7 +123,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           Expanded(
             child: ListView.separated(
               itemCount: _transactions.length,
-              separatorBuilder: (_, __) => const Divider(),
+              separatorBuilder: (_, _) => const Divider(),
               itemBuilder: (context, index) {
                 final item = _transactions[index];
                 final info = item.transactionInfo;

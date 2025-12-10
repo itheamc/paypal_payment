@@ -7,7 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/main.dart';
+import 'package:paypal_payment_example/main.dart';
 
 void main() {
   testWidgets('Verify Home Screen loads', (WidgetTester tester) async {

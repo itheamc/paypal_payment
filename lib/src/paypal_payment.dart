@@ -1,4 +1,5 @@
 import 'package:paypal_payment/src/config/env/env.dart';
+import 'api/checkout/checkout_api.dart';
 import 'config/env/env_keys.dart';
 import 'config/environment.dart';
 import 'api/orders/orders_api.dart';
@@ -41,6 +42,13 @@ class PaypalPayment {
   ///
   final TransactionsApi transactions;
 
+  /// Provides access to the high-level Checkout API.
+  ///
+  /// This simplifies the overall checkout process by coordinating
+  /// interactions between the [OrdersApi] and [PaymentsApi].
+  ///
+  final CheckoutApi checkout;
+
   /// A private constructor to prevent direct instantiation.
   ///
   /// This is part of the singleton pattern implementation. It initializes
@@ -50,7 +58,8 @@ class PaypalPayment {
     : _hostApi = PaypalPaymentHostApi(),
       orders = OrdersApi.instance,
       payments = PaymentsApi.instance,
-      transactions = TransactionsApi.instance;
+      transactions = TransactionsApi.instance,
+      checkout = CheckoutApi.instance;
 
   /// The internal, private instance of the [PaypalPayment] class.
   ///

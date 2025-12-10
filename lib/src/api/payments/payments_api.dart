@@ -1,4 +1,3 @@
-import '../../network/paypal_http_service.dart';
 import '../../utils/logger.dart';
 import 'v1/payments_api_v1.dart';
 import 'v2/payments_api_v2.dart';
@@ -9,10 +8,6 @@ import 'v2/payments_api_v2.dart';
 /// of the payments API, such as `v1` and `v2`. It encapsulates the
 /// underlying HTTP service and API versioning.
 class PaymentsApi {
-  /// A reference to the shared [PaypalHttpService] instance used for all
-  /// network requests.
-  final PaypalHttpService _httpService;
-
   /// Provides access to the methods available in version 1 of the Payments API.
   ///
   final PaymentsApiV1 v1;
@@ -24,10 +19,7 @@ class PaymentsApi {
   /// Private internal constructor to enforce the singleton pattern.
   /// It initializes the http service and the different API versions.
   ///
-  PaymentsApi._()
-    : _httpService = PaypalHttpService.instance,
-      v1 = PaymentsApiV1.instance,
-      v2 = PaymentsApiV2.instance;
+  PaymentsApi._() : v1 = PaymentsApiV1.instance, v2 = PaymentsApiV2.instance;
 
   /// The static, private instance of the [PaymentsApi].
   ///

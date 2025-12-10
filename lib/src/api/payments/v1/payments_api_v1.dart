@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'models/payer.dart';
 import 'models/redirect_urls.dart';
+import 'models/responses/capture_order_payment_response.dart';
 import 'models/responses/payment_details_response.dart';
 import 'models/transaction.dart';
 import 'models/responses/create_payment_response.dart';
@@ -66,7 +67,7 @@ class PaymentsApiV1 {
     PaymentIntent intent = .sale,
     required Payer payer,
     required List<Transaction> transactions,
-    RedirectUrls? redirectUrls,
+    required RedirectUrls redirectUrls,
     String? noteToPayer,
     String? experienceProfileId,
     void Function()? onInitiated,
@@ -83,7 +84,7 @@ class PaymentsApiV1 {
         "intent": intent.name,
         "payer": payer.toJson(),
         "transactions": transactions.map((e) => e.toJson()).toList(),
-        "redirect_urls": redirectUrls?.toJson(),
+        "redirect_urls": redirectUrls.toJson(),
         "note_to_payer": noteToPayer,
         "experience_profile_id": experienceProfileId,
       }.filterNotNull();
@@ -249,6 +250,61 @@ class PaymentsApiV1 {
       if (ResponseValidator.isValidResponse(response)) {
         final decoded = jsonDecode(response.body);
         onSuccess?.call(VoidAuthorizedPaymentResponseV1.fromJson(decoded));
+        return;
+      }
+
+      onError?.call(HttpException.fromResponse(response).message);
+    } on HttpException catch (e) {
+      onError?.call(e.message);
+    } catch (e) {
+      onError?.call(e.toString());
+    }
+  }
+
+  /// Captures a payment for an order.
+  /// https://developer.paypal.com/docs/api/payments/v1/#order_capture
+  ///
+  /// To use this method, the original payment must have been created with an
+  /// `intent` of `order`.
+  ///
+  /// [orderId] The ID of the order to capture a payment for.
+  /// [amount] The amount to capture.
+  /// [finalCapture] Whether this is the final capture for the order. Defaults to `true`.
+  /// [onInitiated] A callback that fires when the request is initiated.
+  /// [onPreRequest] A callback that provides the endpoint and payload just before the HTTP request is made. Useful for debugging.
+  /// [onSuccess] A callback that fires with the response upon a successful capture.
+  /// [onError] A callback that fires when an error occurs during the process.
+  ///
+  Future<void> captureOrderPayment({
+    required String orderId,
+    required TransactionAmount amount,
+    bool finalCapture = true,
+    void Function()? onInitiated,
+    void Function(String endpoint, Map<String, dynamic> payload)? onPreRequest,
+    void Function(CaptureOrderPaymentResponseV1)? onSuccess,
+    void Function(String? error)? onError,
+  }) async {
+    try {
+      onInitiated?.call();
+
+      final endpoint = '/v1/payments/orders/$orderId/capture';
+
+      final payload = {
+        "amount": amount.toJson()..removeWhere((k, v) => k == "details"),
+        "is_final_capture": finalCapture,
+      };
+
+      onPreRequest?.call(endpoint, payload);
+
+      final response = await _httpService.post(
+        endpoint,
+        payload,
+        isAuthenticated: true,
+      );
+
+      if (ResponseValidator.isValidResponse(response)) {
+        final decoded = jsonDecode(response.body);
+        onSuccess?.call(CaptureOrderPaymentResponseV1.fromJson(decoded));
         return;
       }
 

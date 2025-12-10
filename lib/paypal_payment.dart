@@ -6,7 +6,7 @@ export 'src/api/orders/models/funding_source.dart';
 export 'src/api/orders/models/order_intent.dart';
 export 'src/api/orders/models/purchase_unit.dart';
 export 'src/api/orders/models/responses/order_create_response.dart';
-export 'src/api/orders/models/responses/capture_order_payment_response.dart'
+export 'src/api/orders/models/responses/capture_order_response.dart'
     hide
         Payer,
         PaymentSource,
@@ -17,7 +17,7 @@ export 'src/api/orders/models/responses/capture_order_payment_response.dart'
         SellerReceivableBreakdown,
         Shipping,
         Address;
-export 'src/api/orders/models/responses/authorize_order_payment_response.dart'
+export 'src/api/orders/models/responses/authorize_order_response.dart'
     hide PurchaseUnit, Payments, Authorization;
 
 export 'src/api/payments/models/payment_intent.dart';
@@ -31,6 +31,7 @@ export 'src/api/payments/v1/models/responses/create_payment_response.dart';
 export 'src/api/payments/v1/models/responses/payment_details_response.dart';
 export 'src/api/payments/v1/models/responses/execute_payment_response.dart';
 export 'src/api/payments/v1/models/responses/capture_authorized_payment_response.dart';
+export 'src/api/payments/v1/models/responses/capture_order_payment_response.dart';
 export 'src/api/payments/v1/models/responses/void_authorized_payment_response.dart';
 export 'src/api/payments/v1/models/responses/refund_captured_payment_response.dart';
 export 'src/api/payments/v1/models/responses/refund_sale_response.dart';

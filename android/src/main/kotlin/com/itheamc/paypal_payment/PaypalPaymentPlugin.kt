@@ -21,15 +21,18 @@ class PaypalPaymentPlugin :
 
     /** The current Android [Activity]. */
     private var activity: Activity? = null
+
     /** The binding to the Flutter engine. */
     private var pluginBinding: FlutterPlugin.FlutterPluginBinding? = null
+
     /** The binding to the activity. */
     private var activityPluginBinding: ActivityPluginBinding? = null
+
     /** The handler for web-based PayPal checkout. */
     private var webCheckoutHandler: WebCheckoutHandler? = null
 
     /** The configuration for the PayPal payment. */
-    private var paypalPaymentConfig: PaypalPaymentConfig? = null
+    private var paypalPaymentConfig: PaypalPaymentConfig = PaypalPaymentConfig()
 
 
     /**
@@ -45,7 +48,10 @@ class PaypalPaymentPlugin :
      */
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         pluginBinding = null
-        paypalPaymentConfig = null
+        paypalPaymentConfig.apply {
+            clientId = null
+            environment = null
+        }
     }
 
 
@@ -100,7 +106,10 @@ class PaypalPaymentPlugin :
      * @param clientId The PayPal client ID.
      * @param environment The PayPal environment ("live" or "sandbox").
      */
-    override fun init(clientId: String, environment: String) {
-        paypalPaymentConfig = PaypalPaymentConfig(clientId, environment)
+    override fun initialize(clientId: String, environment: String) {
+        paypalPaymentConfig.apply {
+            this.clientId = clientId
+            this.environment = environment
+        }
     }
 }

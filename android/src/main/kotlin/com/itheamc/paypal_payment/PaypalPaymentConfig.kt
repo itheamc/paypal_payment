@@ -9,8 +9,8 @@ import com.paypal.android.corepayments.Environment
  * @property environment The PayPal environment ("live" or "sandbox").
  */
 class PaypalPaymentConfig(
-    val clientId: String,
-    val environment: String,
+    var clientId: String? = null,
+    var environment: String? = null,
 )
 
 /**
@@ -20,6 +20,6 @@ class PaypalPaymentConfig(
  */
 fun PaypalPaymentConfig.toPaypalEnvironment(): Environment {
     return runCatching {
-        Environment.valueOf(environment.uppercase())
+        Environment.valueOf(environment!!.uppercase())
     }.getOrDefault(Environment.SANDBOX)
 }

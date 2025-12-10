@@ -2,8 +2,8 @@ import '../../../models/amount.dart';
 import '../../../models/link.dart';
 import '../../../models/seller_protection.dart';
 
-class CaptureOrderPaymentResponse {
-  CaptureOrderPaymentResponse({
+class CaptureOrderResponse {
+  CaptureOrderResponse({
     this.id,
     this.status,
     this.paymentSource,
@@ -19,7 +19,7 @@ class CaptureOrderPaymentResponse {
   final Payer? payer;
   final List<Link> links;
 
-  CaptureOrderPaymentResponse copy({
+  CaptureOrderResponse copy({
     String? id,
     String? status,
     PaymentSource? paymentSource,
@@ -27,7 +27,7 @@ class CaptureOrderPaymentResponse {
     Payer? payer,
     List<Link>? links,
   }) {
-    return CaptureOrderPaymentResponse(
+    return CaptureOrderResponse(
       id: id ?? this.id,
       status: status ?? this.status,
       paymentSource: paymentSource ?? this.paymentSource,
@@ -37,8 +37,8 @@ class CaptureOrderPaymentResponse {
     );
   }
 
-  factory CaptureOrderPaymentResponse.fromJson(Map<String, dynamic> json) {
-    return CaptureOrderPaymentResponse(
+  factory CaptureOrderResponse.fromJson(Map<String, dynamic> json) {
+    return CaptureOrderResponse(
       id: json["id"],
       status: json["status"],
       paymentSource: json["payment_source"] == null

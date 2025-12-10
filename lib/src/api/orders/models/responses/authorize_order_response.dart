@@ -1,9 +1,9 @@
 import '../../../models/amount.dart';
 import '../../../models/link.dart';
 import '../../../models/seller_protection.dart';
-import 'capture_order_payment_response.dart'
+import 'capture_order_response.dart'
     hide
-        CaptureOrderPaymentResponse,
+        CaptureOrderResponse,
         PurchaseUnit,
         Payments,
         Capture,
@@ -12,8 +12,8 @@ import 'capture_order_payment_response.dart'
         Address,
         Paypal;
 
-class AuthorizeOrderPaymentResponse {
-  AuthorizeOrderPaymentResponse({
+class AuthorizeOrderResponse {
+  AuthorizeOrderResponse({
     this.id,
     this.status,
     this.paymentSource,
@@ -29,7 +29,7 @@ class AuthorizeOrderPaymentResponse {
   final Payer? payer;
   final List<Link> links;
 
-  AuthorizeOrderPaymentResponse copy({
+  AuthorizeOrderResponse copy({
     String? id,
     String? status,
     PaymentSource? paymentSource,
@@ -37,7 +37,7 @@ class AuthorizeOrderPaymentResponse {
     Payer? payer,
     List<Link>? links,
   }) {
-    return AuthorizeOrderPaymentResponse(
+    return AuthorizeOrderResponse(
       id: id ?? this.id,
       status: status ?? this.status,
       paymentSource: paymentSource ?? this.paymentSource,
@@ -47,8 +47,8 @@ class AuthorizeOrderPaymentResponse {
     );
   }
 
-  factory AuthorizeOrderPaymentResponse.fromJson(Map<String, dynamic> json) {
-    return AuthorizeOrderPaymentResponse(
+  factory AuthorizeOrderResponse.fromJson(Map<String, dynamic> json) {
+    return AuthorizeOrderResponse(
       id: json["id"],
       status: json["status"],
       paymentSource: json["payment_source"] == null

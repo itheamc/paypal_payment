@@ -27,7 +27,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
  * @property binding The Flutter plugin binding.
  */
 class WebCheckoutHandler(
-    private val paypalPaymentConfig: PaypalPaymentConfig?,
+    private val paypalPaymentConfig: PaypalPaymentConfig,
     private val activity: Activity?,
     private val binding: FlutterPlugin.FlutterPluginBinding?,
 ) : PayPalPaymentWebCheckoutHostApi {
@@ -52,13 +52,11 @@ class WebCheckoutHandler(
      * Initiates the PayPal web checkout.
      *
      * @param orderId The ID of the order to be processed.
-     * @param fallbackUrl The URL to fall back to after the checkout process.
      * @param fundingSource The funding source for the payment.
      * @throws FlutterError if the activity, binding, or PayPal configuration is null.
      */
-    override fun initiateCheckout(
+    override fun startCheckout(
         orderId: String,
-        fallbackUrl: String,
         fundingSource: String
     ) {
         if (activity == null) {
@@ -75,7 +73,7 @@ class WebCheckoutHandler(
             )
         }
 
-        if (paypalPaymentConfig == null) {
+        if (paypalPaymentConfig.clientId == null) {
             throw FlutterError(
                 code = "SDK_NOT_INITIALIZED",
                 message = "SDK not initialized"
@@ -84,7 +82,7 @@ class WebCheckoutHandler(
 
         // STEP 1: Creating Configuration Object for Paypal Payment
         val config = CoreConfig(
-            paypalPaymentConfig.clientId,
+            paypalPaymentConfig.clientId!!,
             paypalPaymentConfig.toPaypalEnvironment()
         )
 
@@ -92,7 +90,7 @@ class WebCheckoutHandler(
         checkoutClient = PayPalWebCheckoutClient(
             context = activity,
             configuration = config,
-            urlScheme = fallbackUrl
+            urlScheme = "itheamc://paypal"
         )
 
         // STEP 3: Initialize & register Result Listener
@@ -136,47 +134,46 @@ class WebCheckoutHandler(
      * @return `true` if the intent was handled, `false` otherwise.
      */
     fun onNewIntent(intent: Intent): Boolean {
-        if (intent.action == Intent.ACTION_VIEW && intent.scheme == "itheamc") {
-
-            intent.data?.let {
-                // STEP 5: Finish Start Checkout
-                when (val result = checkoutClient?.finishStart(intent)) {
-                    is PayPalWebCheckoutFinishStartResult.Canceled -> {
-                        listener?.onCanceled(
-                            orderId = result.orderId,
-                        )
-                    }
-
-                    is PayPalWebCheckoutFinishStartResult.Failure -> {
-                        listener?.onFailure(
-                            orderId = result.orderId,
-                            reason = result.error.errorDescription,
-                            code = result.error.code,
-                            correlationId = result.error.correlationId
-                        )
-                    }
-
-                    PayPalWebCheckoutFinishStartResult.NoResult -> {
-                        listener?.onError("Unable to process your request")
-                    }
-
-                    is PayPalWebCheckoutFinishStartResult.Success -> {
-                        listener?.onSuccess(
-                            orderId = result.orderId,
-                            payerId = result.payerId
-                        )
-                    }
-
-                    null -> {
-                        listener?.onError("Something went wrong")
-                    }
+        if (intent.scheme == "itheamc") {
+            // STEP 5: Finish Start Checkout
+            when (val result = checkoutClient?.finishStart(intent)) {
+                is PayPalWebCheckoutFinishStartResult.Canceled -> {
+                    listener?.onCanceled(
+                        orderId = result.orderId,
+                    )
                 }
 
-                // STEP 6: Reset client and listener
-                checkoutClient = null
-                listener = null
+                is PayPalWebCheckoutFinishStartResult.Failure -> {
+                    listener?.onFailure(
+                        orderId = result.orderId,
+                        reason = result.error.errorDescription,
+                        code = result.error.code,
+                        correlationId = result.error.correlationId
+                    )
+                }
+
+                PayPalWebCheckoutFinishStartResult.NoResult -> {
+                    listener?.onSuccess(
+                        orderId = intent.data?.getQueryParameter("token"),
+                        payerId = intent.data?.getQueryParameter("PayerID")
+                    )
+                }
+
+                is PayPalWebCheckoutFinishStartResult.Success -> {
+                    listener?.onSuccess(
+                        orderId = result.orderId,
+                        payerId = result.payerId
+                    )
+                }
+
+                null -> {
+                    listener?.onError("Something went wrong")
+                }
             }
 
+            // STEP 6: Reset client and listener
+            checkoutClient = null
+            listener = null
             return true
         }
         return false
@@ -292,7 +289,7 @@ private fun String.toPayPalWebCheckoutFundingSource(): PayPalWebCheckoutFundingS
     return when (this) {
         "paypal" -> PayPalWebCheckoutFundingSource.PAYPAL
         "credit" -> PayPalWebCheckoutFundingSource.PAYPAL_CREDIT
-        "paylater" -> PayPalWebCheckoutFundingSource.PAY_LATER
+        "payLater" -> PayPalWebCheckoutFundingSource.PAY_LATER
         else -> PayPalWebCheckoutFundingSource.PAYPAL
     }
 }

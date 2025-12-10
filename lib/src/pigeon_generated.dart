@@ -273,8 +273,8 @@ class PaypalPaymentHostApi {
 
   final String pigeonVar_messageChannelSuffix;
 
-  Future<void> init(String clientId, String environment) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.init$pigeonVar_messageChannelSuffix';
+  Future<void> initialize(String clientId, String environment) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -309,14 +309,14 @@ class PayPalPaymentWebCheckoutHostApi {
 
   final String pigeonVar_messageChannelSuffix;
 
-  Future<void> initiateCheckout(String orderId, String fallbackUrl, String fundingSource) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.initiateCheckout$pigeonVar_messageChannelSuffix';
+  Future<void> startCheckout(String orderId, String fundingSource) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[orderId, fallbackUrl, fundingSource]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[orderId, fundingSource]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);

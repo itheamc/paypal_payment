@@ -258,7 +258,7 @@ val PigeonGeneratedPigeonMethodCodec = StandardMethodCodec(PigeonGeneratedPigeon
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface PaypalPaymentHostApi {
-  fun init(clientId: String, environment: String)
+  fun initialize(clientId: String, environment: String)
 
   companion object {
     /** The codec used by PaypalPaymentHostApi. */
@@ -270,14 +270,14 @@ interface PaypalPaymentHostApi {
     fun setUp(binaryMessenger: BinaryMessenger, api: PaypalPaymentHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.init$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
             val clientIdArg = args[0] as String
             val environmentArg = args[1] as String
             val wrapped: List<Any?> = try {
-              api.init(clientIdArg, environmentArg)
+              api.initialize(clientIdArg, environmentArg)
               listOf(null)
             } catch (exception: Throwable) {
               PigeonGeneratedPigeonUtils.wrapError(exception)
@@ -293,7 +293,7 @@ interface PaypalPaymentHostApi {
 }
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface PayPalPaymentWebCheckoutHostApi {
-  fun initiateCheckout(orderId: String, fallbackUrl: String, fundingSource: String)
+  fun startCheckout(orderId: String, fundingSource: String)
 
   companion object {
     /** The codec used by PayPalPaymentWebCheckoutHostApi. */
@@ -305,15 +305,14 @@ interface PayPalPaymentWebCheckoutHostApi {
     fun setUp(binaryMessenger: BinaryMessenger, api: PayPalPaymentWebCheckoutHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.initiateCheckout$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
             val orderIdArg = args[0] as String
-            val fallbackUrlArg = args[1] as String
-            val fundingSourceArg = args[2] as String
+            val fundingSourceArg = args[1] as String
             val wrapped: List<Any?> = try {
-              api.initiateCheckout(orderIdArg, fallbackUrlArg, fundingSourceArg)
+              api.startCheckout(orderIdArg, fundingSourceArg)
               listOf(null)
             } catch (exception: Throwable) {
               PigeonGeneratedPigeonUtils.wrapError(exception)

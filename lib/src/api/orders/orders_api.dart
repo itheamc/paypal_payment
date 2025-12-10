@@ -7,9 +7,8 @@ import '../../network/http_response_validator.dart';
 import '../../network/paypal_http_service.dart';
 import '../../pigeon_generated.dart';
 import '../../utils/logger.dart';
-import 'models/responses/authorize_order_payment_response.dart'
-    hide PurchaseUnit;
-import 'models/responses/capture_order_payment_response.dart' hide PurchaseUnit;
+import 'models/responses/authorize_order_response.dart' hide PurchaseUnit;
+import 'models/responses/capture_order_response.dart' hide PurchaseUnit;
 import 'models/responses/order_create_response.dart';
 import 'models/purchase_unit.dart';
 
@@ -120,7 +119,7 @@ class OrdersApi {
   /// - [onPreRequest]: A callback that provides the endpoint and payload for debugging,
   ///   just before the network request is sent.
   /// - [onSuccess]: A callback invoked upon a successful capture, providing a
-  ///   [CaptureOrderPaymentResponse] object with details of the transaction.
+  ///   [CaptureOrderResponse] object with details of the transaction.
   /// - [onError]: A callback invoked if an error occurs during the capture process,
   ///   providing an error message.
   ///
@@ -128,7 +127,7 @@ class OrdersApi {
     required String orderId,
     void Function()? onInitiated,
     void Function(String endpoint, Map<String, dynamic> payload)? onPreRequest,
-    void Function(CaptureOrderPaymentResponse)? onSuccess,
+    void Function(CaptureOrderResponse)? onSuccess,
     void Function(String? error)? onError,
   }) async {
     try {
@@ -147,7 +146,7 @@ class OrdersApi {
 
       if (ResponseValidator.isValidResponse(response)) {
         final decoded = jsonDecode(response.body);
-        onSuccess?.call(CaptureOrderPaymentResponse.fromJson(decoded));
+        onSuccess?.call(CaptureOrderResponse.fromJson(decoded));
         return;
       }
 
@@ -172,7 +171,7 @@ class OrdersApi {
   /// - [onPreRequest] A callback that provides the endpoint and payload for debugging,
   ///   just before the network request is sent.
   /// - [onSuccess] A callback invoked upon a successful authorization, providing an
-  ///   [AuthorizeOrderPaymentResponse] object with authorization details.
+  ///   [AuthorizeOrderResponse] object with authorization details.
   /// - [onError] A callback invoked if an error occurs during the authorization
   ///   process, providing an error message.
   ///
@@ -180,7 +179,7 @@ class OrdersApi {
     required String orderId,
     void Function()? onInitiated,
     void Function(String endpoint, Map<String, dynamic> payload)? onPreRequest,
-    void Function(AuthorizeOrderPaymentResponse)? onSuccess,
+    void Function(AuthorizeOrderResponse)? onSuccess,
     void Function(String? error)? onError,
   }) async {
     try {
@@ -199,7 +198,7 @@ class OrdersApi {
 
       if (ResponseValidator.isValidResponse(response)) {
         final decoded = jsonDecode(response.body);
-        onSuccess?.call(AuthorizeOrderPaymentResponse.fromJson(decoded));
+        onSuccess?.call(AuthorizeOrderResponse.fromJson(decoded));
         return;
       }
 

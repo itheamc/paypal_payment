@@ -14,14 +14,13 @@ import 'package:pigeon/pigeon.dart';
 )
 @HostApi()
 abstract class PaypalPaymentHostApi {
-  void init(String clientId, String environment);
+  void initialize(String clientId, String environment);
 }
 
 @HostApi()
 abstract class PayPalPaymentWebCheckoutHostApi {
-  void initiateCheckout(
+  void startCheckout(
     String orderId,
-    String fallbackUrl,
     String fundingSource,
   );
 }

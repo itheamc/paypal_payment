@@ -305,7 +305,7 @@ var pigeonGeneratedPigeonMethodCodec = FlutterStandardMethodCodec(readerWriter: 
 
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol PaypalPaymentHostApi {
-  func init(clientId: String, environment: String) throws
+  func initialize(clientId: String, environment: String) throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -314,27 +314,27 @@ class PaypalPaymentHostApiSetup {
   /// Sets up an instance of `PaypalPaymentHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PaypalPaymentHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let initChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.init\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let initializeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      initChannel.setMessageHandler { message, reply in
+      initializeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
         let clientIdArg = args[0] as! String
         let environmentArg = args[1] as! String
         do {
-          try api.init(clientId: clientIdArg, environment: environmentArg)
+          try api.initialize(clientId: clientIdArg, environment: environmentArg)
           reply(wrapResult(nil))
         } catch {
           reply(wrapError(error))
         }
       }
     } else {
-      initChannel.setMessageHandler(nil)
+      initializeChannel.setMessageHandler(nil)
     }
   }
 }
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol PayPalPaymentWebCheckoutHostApi {
-  func initiateCheckout(orderId: String, fallbackUrl: String, fundingSource: String) throws
+  func startCheckout(orderId: String, fundingSource: String) throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -343,22 +343,21 @@ class PayPalPaymentWebCheckoutHostApiSetup {
   /// Sets up an instance of `PayPalPaymentWebCheckoutHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PayPalPaymentWebCheckoutHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let initiateCheckoutChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.initiateCheckout\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let startCheckoutChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      initiateCheckoutChannel.setMessageHandler { message, reply in
+      startCheckoutChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
         let orderIdArg = args[0] as! String
-        let fallbackUrlArg = args[1] as! String
-        let fundingSourceArg = args[2] as! String
+        let fundingSourceArg = args[1] as! String
         do {
-          try api.initiateCheckout(orderId: orderIdArg, fallbackUrl: fallbackUrlArg, fundingSource: fundingSourceArg)
+          try api.startCheckout(orderId: orderIdArg, fundingSource: fundingSourceArg)
           reply(wrapResult(nil))
         } catch {
           reply(wrapError(error))
         }
       }
     } else {
-      initiateCheckoutChannel.setMessageHandler(nil)
+      startCheckoutChannel.setMessageHandler(nil)
     }
   }
 }

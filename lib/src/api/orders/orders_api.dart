@@ -7,6 +7,8 @@ import '../../network/http_response_validator.dart';
 import '../../network/paypal_http_service.dart';
 import '../../pigeon_generated.dart';
 import '../../utils/logger.dart';
+import 'models/responses/authorize_order_payment_response.dart'
+    hide PurchaseUnit;
 import 'models/responses/capture_order_payment_response.dart' hide PurchaseUnit;
 import 'models/responses/order_create_response.dart';
 import 'models/purchase_unit.dart';
@@ -146,6 +148,58 @@ class OrdersApi {
       if (ResponseValidator.isValidResponse(response)) {
         final decoded = jsonDecode(response.body);
         onSuccess?.call(CaptureOrderPaymentResponse.fromJson(decoded));
+        return;
+      }
+
+      onError?.call(HttpException.fromResponse(response).message);
+    } on HttpException catch (e) {
+      onError?.call(e.message);
+    } catch (e) {
+      onError?.call(e.toString());
+    }
+  }
+
+  /// Authorizes payment for a previously created order.
+  ///
+  /// This action establishes a payment authorization that can be captured later.
+  /// It should be called after a user has approved the payment but before the
+  /// funds are to be captured. This is typically used when an order is not
+  /// fulfilled immediately.
+  /// See: https://developer.paypal.com/docs/api/orders/v2/#orders_authorize
+  ///
+  /// - [orderId] The ID of the order for which to authorize payment. This is required.
+  /// - [onInitiated] A callback that is invoked when the authorization process begins.
+  /// - [onPreRequest] A callback that provides the endpoint and payload for debugging,
+  ///   just before the network request is sent.
+  /// - [onSuccess] A callback invoked upon a successful authorization, providing an
+  ///   [AuthorizeOrderPaymentResponse] object with authorization details.
+  /// - [onError] A callback invoked if an error occurs during the authorization
+  ///   process, providing an error message.
+  ///
+  Future<void> authorizeOrder({
+    required String orderId,
+    void Function()? onInitiated,
+    void Function(String endpoint, Map<String, dynamic> payload)? onPreRequest,
+    void Function(AuthorizeOrderPaymentResponse)? onSuccess,
+    void Function(String? error)? onError,
+  }) async {
+    try {
+      onInitiated?.call();
+
+      final endpoint = '/v2/checkout/orders/$orderId/authorize';
+      final payload = <String, dynamic>{};
+
+      onPreRequest?.call(endpoint, payload);
+
+      final response = await _httpService.post(
+        endpoint,
+        payload,
+        isAuthenticated: true,
+      );
+
+      if (ResponseValidator.isValidResponse(response)) {
+        final decoded = jsonDecode(response.body);
+        onSuccess?.call(AuthorizeOrderPaymentResponse.fromJson(decoded));
         return;
       }
 

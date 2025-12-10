@@ -14,10 +14,11 @@ export 'src/api/orders/models/responses/capture_order_payment_response.dart'
         PurchaseUnit,
         Payments,
         Capture,
-        SellerProtection,
         SellerReceivableBreakdown,
         Shipping,
         Address;
+export 'src/api/orders/models/responses/authorize_order_payment_response.dart'
+    hide PurchaseUnit, Payments, Authorization;
 
 export 'src/api/payments/models/payment_intent.dart';
 export 'src/api/payments/v1/models/item.dart';

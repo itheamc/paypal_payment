@@ -1,5 +1,6 @@
 import '../../../models/amount.dart';
 import '../../../models/link.dart';
+import '../../../models/seller_protection.dart';
 
 class CaptureOrderPaymentResponse {
   CaptureOrderPaymentResponse({
@@ -307,34 +308,6 @@ class Capture {
     "create_time": createTime?.toIso8601String(),
     "update_time": updateTime?.toIso8601String(),
     "links": links.map((x) => x.toJson()).toList(),
-  };
-}
-
-class SellerProtection {
-  SellerProtection({this.status, this.disputeCategories = const []});
-
-  final String? status;
-  final List<String> disputeCategories;
-
-  SellerProtection copy({String? status, List<String>? disputeCategories}) {
-    return SellerProtection(
-      status: status ?? this.status,
-      disputeCategories: disputeCategories ?? this.disputeCategories,
-    );
-  }
-
-  factory SellerProtection.fromJson(Map<String, dynamic> json) {
-    return SellerProtection(
-      status: json["status"],
-      disputeCategories: json["dispute_categories"] is! List
-          ? []
-          : List<String>.from(json["dispute_categories"]!.map((x) => x)),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "dispute_categories": disputeCategories.map((x) => x).toList(),
   };
 }
 

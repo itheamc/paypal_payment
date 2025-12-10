@@ -1,6 +1,6 @@
 import '../../../../models/amount.dart';
 import '../../../../models/link.dart';
-import '../seller_protection.dart';
+import '../../../../models/seller_protection.dart';
 
 class CaptureAuthorizedPaymentResponseV2 {
   CaptureAuthorizedPaymentResponseV2({

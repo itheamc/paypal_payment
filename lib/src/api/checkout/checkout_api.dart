@@ -109,30 +109,39 @@ class CheckoutApi {
 
           // If no orderId is returned, fail early.
           if (orderId == null) {
-            onError?.call("No order id found");
+            onError?.call(
+              "Order creation succeeded but no orderId was returned.",
+            );
             return;
           }
 
           // STEP 3: Start PayPal Native Checkout UI
           _orders.startNativeCheckout(
             orderId: orderId,
-            onError: onError,
+            onError: (err) {
+              onError?.call("Native checkout error: $err");
+            },
 
             // When the checkout UI returns a failure
             onFailure: (orderId, reason, code, correlationId) {
-              onError?.call(reason);
+              onError?.call("Checkout failed due to $reason");
             },
 
             // When user cancels the checkout
             onCancel: (orderId) {
-              onError?.call("Checkout canceled");
+              onError?.call(
+                "Checkout canceled${orderId != null ? " | orderId: $orderId" : ""}",
+              );
             },
 
             // When user approves payment successfully
             onSuccess: (orderId, payerId) async {
               // Ensure required ids exist
               if (orderId == null || payerId == null) {
-                onError?.call("Failed during checkout");
+                onError?.call(
+                  "Checkout succeeded but missing required data:"
+                  " orderId=$orderId, payerId=$payerId",
+                );
                 return;
               }
 
@@ -140,7 +149,9 @@ class CheckoutApi {
               if (intent == .capture) {
                 await _orders.captureOrder(
                   orderId: orderId,
-                  onError: onError,
+                  onError: (err) {
+                    onError?.call("Capture error for $orderId: $err");
+                  },
                   onSuccess: (capture) {
                     // PayPal returns status "COMPLETED" when fully captured
                     if (capture.status?.toLowerCase() == 'completed') {
@@ -148,7 +159,9 @@ class CheckoutApi {
                       return;
                     }
 
-                    onError?.call("Payment not completed");
+                    onError?.call(
+                      "Capture did not complete (status: ${capture.status})",
+                    );
                   },
                 );
 
@@ -158,16 +171,18 @@ class CheckoutApi {
               // STEP 4B: Authorize order (if intent == authorize)
               await _orders.authorizeOrder(
                 orderId: orderId,
-                onError: onError,
+                onError: (err) {
+                  onError?.call("Authorization error for $orderId: $err");
+                },
                 onSuccess: (authorize) {
-                  Logger.logMessage(authorize.status);
-
                   if (authorize.status?.toLowerCase() == 'completed') {
                     onSuccess?.call(orderId);
                     return;
                   }
 
-                  onError?.call("Payment not completed");
+                  onError?.call(
+                    "Authorization did not complete (status: ${authorize.status})",
+                  );
                 },
               );
             },
@@ -175,8 +190,7 @@ class CheckoutApi {
         },
       );
     } catch (e) {
-      // Any unexpected exception is handled here
-      onError?.call(e.toString());
+      onError?.call("Unexpected exception: $e");
     }
   }
 

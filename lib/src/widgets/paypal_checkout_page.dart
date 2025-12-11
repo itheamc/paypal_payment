@@ -82,6 +82,8 @@ class _PaypalCheckoutPageState extends State<PaypalCheckoutPage> {
               // Pop the current page from the navigation stack and pass back
               // the query parameters, which typically include payment
               // details like 'PayerID' and 'paymentId'.
+              // We are doing like this to support other routing like go_router
+              // But we can also sent these response on callback function
               Navigator.pop(context, {
                 "success": true,
                 "queryParams": queryParams,

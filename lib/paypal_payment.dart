@@ -1,5 +1,6 @@
 export 'src/paypal_payment.dart';
 export 'src/config/environment.dart';
+export 'src/config/paypal_configuration.dart';
 
 export 'src/api/models/amount.dart';
 export 'src/api/orders/models/funding_source.dart';

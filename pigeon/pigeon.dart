@@ -19,10 +19,7 @@ abstract class PaypalPaymentHostApi {
 
 @HostApi()
 abstract class PayPalPaymentWebCheckoutHostApi {
-  void startCheckout(
-    String orderId,
-    String fundingSource,
-  );
+  void startCheckout(String orderId, String fundingSource);
 }
 
 // @FlutterApi()

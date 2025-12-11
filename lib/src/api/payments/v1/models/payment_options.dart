@@ -15,7 +15,6 @@ class PaymentOptions {
     return PaymentOptions(allowedPaymentMethod: json["allowed_payment_method"]);
   }
 
-  Map<String, dynamic> toJson() => {
-    "allowed_payment_method": allowedPaymentMethod,
-  }.filterNotNull();
+  Map<String, dynamic> toJson() =>
+      {"allowed_payment_method": allowedPaymentMethod}.filterNotNull();
 }

@@ -40,10 +40,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         minChildSize: 0.4,
         maxChildSize: 0.9,
         expand: false,
-        builder: (context, scrollController) => ResponseViewer(
-          text: formattedResponse,
-          constraints: null,
-        ),
+        builder: (context, scrollController) =>
+            ResponseViewer(text: formattedResponse, constraints: null),
       ),
     );
   }

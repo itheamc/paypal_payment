@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 This is a flutter plugin to handle the paypal payment in flutter app.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/itheamc/paypal_payment'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Amit Chaudhary' => 'itheamc@gmail.com' }
   s.source           = { :path => '.' }

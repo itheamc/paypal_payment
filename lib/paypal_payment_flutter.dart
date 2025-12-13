@@ -6,6 +6,7 @@ export 'src/api/models/amount.dart';
 export 'src/api/orders/models/funding_source.dart';
 export 'src/api/orders/models/order_intent.dart';
 export 'src/api/orders/models/purchase_unit.dart';
+export 'src/api/orders/models/card_detail.dart';
 export 'src/api/orders/models/responses/order_create_response.dart';
 export 'src/api/orders/models/responses/capture_order_response.dart'
     hide

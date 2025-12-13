@@ -813,4 +813,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/itheamc/paypal_payment_flutter).
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/itheamc/paypal_payment).

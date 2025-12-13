@@ -1,4 +1,4 @@
-# paypal_payment
+# paypal_payment_flutter
 
 A comprehensive Flutter plugin for integrating PayPal payments into your Flutter application. This plugin supports both Android and iOS platforms and provides access to PayPal's Orders API, Payments API (v1 & v2), Transactions API, and Checkout flows.
 
@@ -17,7 +17,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  paypal_payment: ^0.0.1
+  paypal_payment_flutter: ^0.0.1
 ```
 
 Then run:
@@ -71,7 +71,7 @@ flutter:
 Initialize the PayPal plugin in your app's main function or before using any PayPal APIs:
 
 ```dart
-import 'package:paypal_payment/paypal_payment.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -104,7 +104,7 @@ The Orders API allows you to create and manage orders for checkout flows.
 #### Create an Order
 
 ```dart
-import 'package:paypal_payment/paypal_payment.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
 
 Future<void> createOrder() async {
   
@@ -533,6 +533,7 @@ If you prefer to build a custom checkout experience without using the Checkout A
 ```dart
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
 
 class ManualOrderCheckout extends StatefulWidget {
   @override
@@ -806,4 +807,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/itheamc/paypal_payment).
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/itheamc/paypal_payment_flutter).

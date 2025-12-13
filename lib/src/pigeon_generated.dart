@@ -14,41 +14,43 @@ PlatformException _createConnectionError(String channelName) {
     message: 'Unable to establish connection on channel: "$channelName".',
   );
 }
-
 bool _deepEquals(Object? a, Object? b) {
   if (a is List && b is List) {
     return a.length == b.length &&
-        a.indexed.every(
-          ((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]),
-        );
+        a.indexed
+        .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
   }
   if (a is Map && b is Map) {
-    return a.length == b.length &&
-        a.entries.every(
-          (MapEntry<Object?, Object?> entry) =>
-              (b as Map<Object?, Object?>).containsKey(entry.key) &&
-              _deepEquals(entry.value, b[entry.key]),
-        );
+    return a.length == b.length && a.entries.every((MapEntry<Object?, Object?> entry) =>
+        (b as Map<Object?, Object?>).containsKey(entry.key) &&
+        _deepEquals(entry.value, b[entry.key]));
   }
   return a == b;
 }
 
-sealed class PayPalWebCheckoutResultEvent {}
+
+sealed class PayPalWebCheckoutResultEvent {
+}
 
 class PayPalWebCheckoutSuccessResultEvent extends PayPalWebCheckoutResultEvent {
-  PayPalWebCheckoutSuccessResultEvent({this.orderId, this.payerId});
+  PayPalWebCheckoutSuccessResultEvent({
+    this.orderId,
+    this.payerId,
+  });
 
   String? orderId;
 
   String? payerId;
 
   List<Object?> _toList() {
-    return <Object?>[orderId, payerId];
+    return <Object?>[
+      orderId,
+      payerId,
+    ];
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
   static PayPalWebCheckoutSuccessResultEvent decode(Object result) {
     result as List<Object?>;
@@ -61,8 +63,7 @@ class PayPalWebCheckoutSuccessResultEvent extends PayPalWebCheckoutResultEvent {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PayPalWebCheckoutSuccessResultEvent ||
-        other.runtimeType != runtimeType) {
+    if (other is! PayPalWebCheckoutSuccessResultEvent || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -73,7 +74,8 @@ class PayPalWebCheckoutSuccessResultEvent extends PayPalWebCheckoutResultEvent {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList());
+  int get hashCode => Object.hashAll(_toList())
+;
 }
 
 class PayPalWebCheckoutFailureResultEvent extends PayPalWebCheckoutResultEvent {
@@ -93,12 +95,16 @@ class PayPalWebCheckoutFailureResultEvent extends PayPalWebCheckoutResultEvent {
   String? correlationId;
 
   List<Object?> _toList() {
-    return <Object?>[orderId, reason, code, correlationId];
+    return <Object?>[
+      orderId,
+      reason,
+      code,
+      correlationId,
+    ];
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
   static PayPalWebCheckoutFailureResultEvent decode(Object result) {
     result as List<Object?>;
@@ -113,8 +119,7 @@ class PayPalWebCheckoutFailureResultEvent extends PayPalWebCheckoutResultEvent {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PayPalWebCheckoutFailureResultEvent ||
-        other.runtimeType != runtimeType) {
+    if (other is! PayPalWebCheckoutFailureResultEvent || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -125,33 +130,37 @@ class PayPalWebCheckoutFailureResultEvent extends PayPalWebCheckoutResultEvent {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList());
+  int get hashCode => Object.hashAll(_toList())
+;
 }
 
-class PayPalWebCheckoutCanceledResultEvent
-    extends PayPalWebCheckoutResultEvent {
-  PayPalWebCheckoutCanceledResultEvent({this.orderId});
+class PayPalWebCheckoutCanceledResultEvent extends PayPalWebCheckoutResultEvent {
+  PayPalWebCheckoutCanceledResultEvent({
+    this.orderId,
+  });
 
   String? orderId;
 
   List<Object?> _toList() {
-    return <Object?>[orderId];
+    return <Object?>[
+      orderId,
+    ];
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
   static PayPalWebCheckoutCanceledResultEvent decode(Object result) {
     result as List<Object?>;
-    return PayPalWebCheckoutCanceledResultEvent(orderId: result[0] as String?);
+    return PayPalWebCheckoutCanceledResultEvent(
+      orderId: result[0] as String?,
+    );
   }
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PayPalWebCheckoutCanceledResultEvent ||
-        other.runtimeType != runtimeType) {
+    if (other is! PayPalWebCheckoutCanceledResultEvent || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -162,32 +171,37 @@ class PayPalWebCheckoutCanceledResultEvent
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList());
+  int get hashCode => Object.hashAll(_toList())
+;
 }
 
 class PayPalWebCheckoutErrorResultEvent extends PayPalWebCheckoutResultEvent {
-  PayPalWebCheckoutErrorResultEvent({this.error});
+  PayPalWebCheckoutErrorResultEvent({
+    this.error,
+  });
 
   String? error;
 
   List<Object?> _toList() {
-    return <Object?>[error];
+    return <Object?>[
+      error,
+    ];
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
   static PayPalWebCheckoutErrorResultEvent decode(Object result) {
     result as List<Object?>;
-    return PayPalWebCheckoutErrorResultEvent(error: result[0] as String?);
+    return PayPalWebCheckoutErrorResultEvent(
+      error: result[0] as String?,
+    );
   }
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PayPalWebCheckoutErrorResultEvent ||
-        other.runtimeType != runtimeType) {
+    if (other is! PayPalWebCheckoutErrorResultEvent || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -198,8 +212,10 @@ class PayPalWebCheckoutErrorResultEvent extends PayPalWebCheckoutResultEvent {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList());
+  int get hashCode => Object.hashAll(_toList())
+;
 }
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -208,16 +224,16 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    } else if (value is PayPalWebCheckoutSuccessResultEvent) {
+    }    else if (value is PayPalWebCheckoutSuccessResultEvent) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is PayPalWebCheckoutFailureResultEvent) {
+    }    else if (value is PayPalWebCheckoutFailureResultEvent) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is PayPalWebCheckoutCanceledResultEvent) {
+    }    else if (value is PayPalWebCheckoutCanceledResultEvent) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PayPalWebCheckoutErrorResultEvent) {
+    }    else if (value is PayPalWebCheckoutErrorResultEvent) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else {
@@ -228,13 +244,13 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129:
+      case 129: 
         return PayPalWebCheckoutSuccessResultEvent.decode(readValue(buffer)!);
-      case 130:
+      case 130: 
         return PayPalWebCheckoutFailureResultEvent.decode(readValue(buffer)!);
-      case 131:
+      case 131: 
         return PayPalWebCheckoutCanceledResultEvent.decode(readValue(buffer)!);
-      case 132:
+      case 132: 
         return PayPalWebCheckoutErrorResultEvent.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -242,21 +258,15 @@ class _PigeonCodec extends StandardMessageCodec {
   }
 }
 
-const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(
-  _PigeonCodec(),
-);
+const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(_PigeonCodec());
 
 class PaypalPaymentHostApi {
   /// Constructor for [PaypalPaymentHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PaypalPaymentHostApi({
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) : pigeonVar_binaryMessenger = binaryMessenger,
-       pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
-           ? '.$messageChannelSuffix'
-           : '';
+  PaypalPaymentHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -264,16 +274,13 @@ class PaypalPaymentHostApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<void> initialize(String clientId, String environment) async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
-      <Object?>[clientId, environment],
-    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[clientId, environment]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -293,13 +300,9 @@ class PayPalPaymentWebCheckoutHostApi {
   /// Constructor for [PayPalPaymentWebCheckoutHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PayPalPaymentWebCheckoutHostApi({
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) : pigeonVar_binaryMessenger = binaryMessenger,
-       pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
-           ? '.$messageChannelSuffix'
-           : '';
+  PayPalPaymentWebCheckoutHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -307,16 +310,13 @@ class PayPalPaymentWebCheckoutHostApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<void> startCheckout(String orderId, String fundingSource) async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment_flutter.PayPalPaymentWebCheckoutHostApi.startCheckout$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
-      <Object?>[orderId, fundingSource],
-    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[orderId, fundingSource]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -332,19 +332,14 @@ class PayPalPaymentWebCheckoutHostApi {
   }
 }
 
-Stream<PayPalWebCheckoutResultEvent> payPalWebCheckoutResultEvent({
-  String instanceName = '',
-}) {
+Stream<PayPalWebCheckoutResultEvent> payPalWebCheckoutResultEvent( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
-  final EventChannel payPalWebCheckoutResultEventChannel = EventChannel(
-    'dev.flutter.pigeon.paypal_payment.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent$instanceName',
-    pigeonMethodCodec,
-  );
-  return payPalWebCheckoutResultEventChannel.receiveBroadcastStream().map((
-    dynamic event,
-  ) {
+  final EventChannel payPalWebCheckoutResultEventChannel =
+      EventChannel('dev.flutter.pigeon.paypal_payment_flutter.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent$instanceName', pigeonMethodCodec);
+  return payPalWebCheckoutResultEventChannel.receiveBroadcastStream().map((dynamic event) {
     return event as PayPalWebCheckoutResultEvent;
   });
 }
+    

@@ -270,7 +270,7 @@ interface PaypalPaymentHostApi {
     fun setUp(binaryMessenger: BinaryMessenger, api: PaypalPaymentHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -305,7 +305,7 @@ interface PayPalPaymentWebCheckoutHostApi {
     fun setUp(binaryMessenger: BinaryMessenger, api: PayPalPaymentWebCheckoutHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.paypal_payment_flutter.PayPalPaymentWebCheckoutHostApi.startCheckout$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -366,7 +366,7 @@ class PigeonEventSink<T>(private val sink: EventChannel.EventSink) {
 abstract class PayPalWebCheckoutResultEventStreamHandler : PigeonGeneratedPigeonEventChannelWrapper<PayPalWebCheckoutResultEvent> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: PayPalWebCheckoutResultEventStreamHandler, instanceName: String = "") {
-      var channelName: String = "dev.flutter.pigeon.paypal_payment.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent"
+      var channelName: String = "dev.flutter.pigeon.paypal_payment_flutter.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }

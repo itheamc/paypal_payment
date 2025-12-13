@@ -1,11 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint paypal_payment.podspec` to validate before publishing.
+# Run `pod lib lint paypal_payment_flutter.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'paypal_payment'
+  s.name             = 'paypal_payment_flutter'
   s.version          = '0.0.1'
-  s.summary          = 'This is a flutter plugin to handle the paypal payment in flutter app.'
+  s.summary          = 'A Flutter plugin that enables seamless PayPal payment processing and integration within Flutter apps.'
   s.description      = <<-DESC
 This is a flutter plugin to handle the paypal payment in flutter app.
                        DESC
@@ -26,5 +26,5 @@ This is a flutter plugin to handle the paypal payment in flutter app.
   # required reason APIs, update the PrivacyInfo.xcprivacy file to describe your
   # plugin's privacy impact, and then uncomment this line. For more information,
   # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-  # s.resource_bundles = {'paypal_payment_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
+  # s.resource_bundles = {'paypal_payment_flutter_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 end

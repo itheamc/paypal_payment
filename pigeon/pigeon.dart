@@ -3,10 +3,10 @@ import 'package:pigeon/pigeon.dart';
 @ConfigurePigeon(
   PigeonOptions(
     dartOut: 'lib/src/pigeon_generated.dart',
-    dartPackageName: 'paypal_payment',
+    dartPackageName: 'paypal_payment_flutter',
     dartOptions: DartOptions(),
     kotlinOut:
-        'android/src/main/kotlin/com/itheamc/paypal_payment/pigeon/PigeonGenerated.kt',
+        'android/src/main/kotlin/com/itheamc/paypal_payment_flutter/pigeon/PigeonGenerated.kt',
     kotlinOptions: KotlinOptions(),
     swiftOut: 'ios/Classes/Pigeon/PigeonGenerated.swift',
     swiftOptions: SwiftOptions(),

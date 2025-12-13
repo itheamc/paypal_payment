@@ -1,4 +1,4 @@
-name: paypal_payment
+name: paypal_payment_flutter
 description: "A Flutter plugin that enables seamless PayPal payment processing and integration within Flutter apps."
 version: 0.0.1
 homepage: "https://github.com/itheamc/paypal_payment"
@@ -39,7 +39,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.itheamc.paypal_payment
+        package: com.itheamc.paypal_payment_flutter
         pluginClass: PaypalPaymentPlugin
       ios:
         pluginClass: PaypalPaymentPlugin

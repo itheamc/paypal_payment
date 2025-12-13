@@ -1,4 +1,8 @@
-## 0.0.1
+## 0.0.2 (13 Dec, 2025)
+
+* Added documented comments for enhanced pup score 
+
+## 0.0.1 (13 Dec, 2025)
 
 * Chore: Initial release
 * Feat: Android side implementation

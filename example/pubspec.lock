@@ -178,7 +178,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
-  paypal_payment:
+  paypal_payment_flutter:
     dependency: "direct main"
     description:
       path: ".."

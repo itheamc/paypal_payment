@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paypal_payment/paypal_payment.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
 import '../checkout_api/checkout_screen.dart';
 import '../orders_api/orders_screen.dart';
 import '../payments_v1/payments_v1_screen.dart';
@@ -18,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    PaypalPayment.instance.initialize();
   }
 
   @override

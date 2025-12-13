@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:paypal_payment/paypal_payment.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
 import '../../common/response_viewer.dart';
 
 class TransactionsScreen extends StatefulWidget {

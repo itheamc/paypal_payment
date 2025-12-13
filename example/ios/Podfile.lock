@@ -17,7 +17,7 @@ PODS:
     - PayPal/CorePayments
   - PayPal/PayPalWebPayments (2.0.1):
     - PayPal/CorePayments
-  - paypal_payment (0.0.1):
+  - paypal_payment_flutter (0.0.1):
     - Flutter
     - PayPal (= 2.0.1)
   - webview_flutter_wkwebview (0.0.1):
@@ -27,7 +27,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - paypal_payment (from `.symlinks/plugins/paypal_payment/ios`)
+  - paypal_payment_flutter (from `.symlinks/plugins/paypal_payment_flutter/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
 SPEC REPOS:
@@ -39,8 +39,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  paypal_payment:
-    :path: ".symlinks/plugins/paypal_payment/ios"
+  paypal_payment_flutter:
+    :path: ".symlinks/plugins/paypal_payment_flutter/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
@@ -48,7 +48,7 @@ SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   PayPal: 20b107dd206d8445286817672ddfe261f4d5b781
-  paypal_payment: 95b191722fecfbcc1cc8c3ecddf07c68753fb2c9
+  paypal_payment_flutter: e6461e5e5f23a8d304be9b77f17d8fd852cb3dd6
   webview_flutter_wkwebview: 29eb20d43355b48fe7d07113835b9128f84e3af4
 
 PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1

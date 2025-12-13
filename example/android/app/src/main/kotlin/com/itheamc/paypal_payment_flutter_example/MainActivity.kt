@@ -1,4 +1,4 @@
-package com.itheamc.paypal_payment_example
+package com.itheamc.paypal_payment_flutter_example
 
 import io.flutter.embedding.android.FlutterActivity
 

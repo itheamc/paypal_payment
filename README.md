@@ -1,8 +1,8 @@
 # paypal_payment_flutter
 
-[![Pub](https://img.shields.io/pub/v/naxalibre)](https://pub.dev/packages/paypal_payment_flutter)
-[![License](https://img.shields.io/github/license/itheamc/naxalibre)](https://github.com/itheamc/paypal_payment/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/itheamc/naxalibre.svg?style=social)](https://github.com/itheamc/paypal_payment)
+[![Pub](https://img.shields.io/pub/v/paypal_payment_flutter)](https://pub.dev/packages/paypal_payment_flutter)
+[![License](https://img.shields.io/github/license/itheamc/paypal_payment)](https://github.com/itheamc/paypal_payment/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/itheamc/paypal_payment.svg?style=social)](https://github.com/itheamc/paypal_payment)
 
 ## Overview
 

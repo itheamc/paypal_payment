@@ -3,6 +3,8 @@ package com.itheamc.paypal_payment
 import PaypalPaymentHostApi
 import android.app.Activity
 import android.content.Intent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -16,6 +18,7 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener
 class PaypalPaymentPlugin :
     FlutterPlugin,
     ActivityAware,
+    DefaultLifecycleObserver,
     NewIntentListener,
     PaypalPaymentHostApi {
 
@@ -32,7 +35,7 @@ class PaypalPaymentPlugin :
     private var webCheckoutHandler: WebCheckoutHandler? = null
 
     /** The configuration for the PayPal payment. */
-    private var paypalPaymentConfig: PaypalPaymentConfig = PaypalPaymentConfig()
+    private var config: PaypalPaymentConfig = PaypalPaymentConfig()
 
 
     /**
@@ -41,17 +44,24 @@ class PaypalPaymentPlugin :
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         pluginBinding = binding
         PaypalPaymentHostApi.setUp(binding.binaryMessenger, this)
+
+        webCheckoutHandler = WebCheckoutHandler(
+            config = config,
+            getActivity = { activity },
+            getPluginBinding = { pluginBinding }
+        )
     }
 
     /**
      * Called when the plugin is detached from the Flutter engine.
      */
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        pluginBinding = null
-        paypalPaymentConfig.apply {
+        config.apply {
             clientId = null
             environment = null
         }
+        pluginBinding = null
+        webCheckoutHandler = null
     }
 
 
@@ -61,19 +71,19 @@ class PaypalPaymentPlugin :
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activityPluginBinding = binding
         activity = binding.activity
-        webCheckoutHandler = WebCheckoutHandler(paypalPaymentConfig, activity, pluginBinding)
         binding.addOnNewIntentListener(this)
+        (activity as? LifecycleOwner)?.lifecycle?.addObserver(this)
     }
 
     /**
      * Called when the plugin is detached from an activity.
      */
     override fun onDetachedFromActivity() {
+        (activity as? LifecycleOwner)?.lifecycle?.addObserver(this)
         activityPluginBinding?.removeOnNewIntentListener(this)
 
         activityPluginBinding = null
         activity = null
-        webCheckoutHandler = null
     }
 
     /**
@@ -88,6 +98,14 @@ class PaypalPaymentPlugin :
      */
     override fun onDetachedFromActivityForConfigChanges() {
         onDetachedFromActivity()
+    }
+
+    /**
+     * Called when the activity is resumed for a background.
+     */
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        webCheckoutHandler?.onResume()
     }
 
     /**
@@ -107,7 +125,7 @@ class PaypalPaymentPlugin :
      * @param environment The PayPal environment ("live" or "sandbox").
      */
     override fun initialize(clientId: String, environment: String) {
-        paypalPaymentConfig.apply {
+        config.apply {
             this.clientId = clientId
             this.environment = environment
         }

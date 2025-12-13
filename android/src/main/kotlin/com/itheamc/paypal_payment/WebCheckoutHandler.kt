@@ -18,33 +18,47 @@ import com.paypal.android.paypalwebpayments.PayPalWebCheckoutFinishStartResult
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutFundingSource
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutRequest
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Handles PayPal web checkout flow.
  *
- * @property paypalPaymentConfig The configuration for PayPal payments.
- * @property activity The current Android activity.
- * @property binding The Flutter plugin binding.
+ * @property config The configuration for PayPal payments.
+ * @property getActivity The callback to get the current activity.
+ * @property getPluginBinding The callback to get the current plugin binding.
  */
 class WebCheckoutHandler(
-    private val paypalPaymentConfig: PaypalPaymentConfig,
-    private val activity: Activity?,
-    private val binding: FlutterPlugin.FlutterPluginBinding?,
+    private val config: PaypalPaymentConfig,
+    private val getActivity: () -> Activity?,
+    private val getPluginBinding: () -> FlutterPlugin.FlutterPluginBinding?,
 ) : PayPalPaymentWebCheckoutHostApi {
 
     /**
      * The client for handling PayPal web checkout.
      */
-    private var checkoutClient: PayPalWebCheckoutClient? = null
+    private var _checkoutClient: PayPalWebCheckoutClient? = null
 
     /**
      * The listener for checkout result events.
      */
-    private var listener: CheckoutResultEventListener? = null
+    private var _listener: CheckoutResultEventListener? = null
+
+    /**
+     * The flag to check if the checkout on intent is called or not
+     */
+    private var _isCheckoutOnIntentCalled = false
+
+    /**
+     * Currently processing order id
+     */
+    private var _currentlyProcessingOrderId: String? = null
 
     init {
-        binding?.binaryMessenger?.let {
-            PayPalPaymentWebCheckoutHostApi.setUp(it, this)
+        getPluginBinding()?.let {
+            PayPalPaymentWebCheckoutHostApi.setUp(it.binaryMessenger, this)
         }
     }
 
@@ -59,51 +73,42 @@ class WebCheckoutHandler(
         orderId: String,
         fundingSource: String
     ) {
-        if (activity == null) {
-            throw FlutterError(
-                code = "ACTIVITY_NULL",
-                message = "Activity is null"
-            )
-        }
+        // STEP 1: Make checkout intent called variable false and set the
+        // currently processing order id
+        _isCheckoutOnIntentCalled = false
+        _currentlyProcessingOrderId = orderId
 
-        if (binding == null) {
-            throw FlutterError(
-                code = "BINDING_NULL",
-                message = "Binding is null"
-            )
-        }
+        // STEP 2: Initialize & register Result Listener
+        _listener = CheckoutResultEventListener()
 
-        if (paypalPaymentConfig.clientId == null) {
-            throw FlutterError(
-                code = "SDK_NOT_INITIALIZED",
-                message = "SDK not initialized"
-            )
-        }
-
-        // STEP 1: Creating Configuration Object for Paypal Payment
-        val config = CoreConfig(
-            paypalPaymentConfig.clientId!!,
-            paypalPaymentConfig.toPaypalEnvironment()
+        PayPalWebCheckoutResultEventStreamHandler.register(
+            getPluginBinding()!!.binaryMessenger,
+            _listener!!
         )
 
-        // STEP 2: Initializing Checkout Client
-        checkoutClient = PayPalWebCheckoutClient(
-            context = activity,
+        if (config.clientId == null) {
+            _listener?.onError("SDK not initialized")
+            _listener = null
+            _currentlyProcessingOrderId = null
+            return
+        }
+
+        // STEP 3: Creating Configuration Object for Paypal Payment
+        val config = CoreConfig(
+            config.clientId!!,
+            config.toPaypalEnvironment()
+        )
+
+        // STEP 4: Initializing Checkout Client
+        _checkoutClient = PayPalWebCheckoutClient(
+            context = getActivity()!!,
             configuration = config,
             urlScheme = "itheamc://paypal"
         )
 
-        // STEP 3: Initialize & register Result Listener
-        listener = CheckoutResultEventListener()
-
-        PayPalWebCheckoutResultEventStreamHandler.register(
-            binding.binaryMessenger,
-            listener!!
-        )
-
-        // STEP 4: Starting Checkout Request
-        checkoutClient?.start(
-            activity = activity,
+        // STEP 5: Starting Checkout Request
+        _checkoutClient?.start(
+            activity = getActivity()!!,
             request = PayPalWebCheckoutRequest(
                 orderId = orderId,
                 fundingSource = fundingSource.toPayPalWebCheckoutFundingSource()
@@ -111,7 +116,7 @@ class WebCheckoutHandler(
             callback = { result ->
                 when (result) {
                     is PayPalPresentAuthChallengeResult.Failure -> {
-                        listener?.onFailure(
+                        _listener?.onFailure(
                             orderId = orderId,
                             reason = result.error.errorDescription,
                             code = result.error.code,
@@ -135,16 +140,19 @@ class WebCheckoutHandler(
      */
     fun onNewIntent(intent: Intent): Boolean {
         if (intent.scheme == "itheamc") {
-            // STEP 5: Finish Start Checkout
-            when (val result = checkoutClient?.finishStart(intent)) {
+            // STEP 6: Make checkout intent called variable true
+            _isCheckoutOnIntentCalled = true
+
+            // STEP 7: Finish Start Checkout
+            when (val result = _checkoutClient?.finishStart(intent)) {
                 is PayPalWebCheckoutFinishStartResult.Canceled -> {
-                    listener?.onCanceled(
+                    _listener?.onCanceled(
                         orderId = result.orderId,
                     )
                 }
 
                 is PayPalWebCheckoutFinishStartResult.Failure -> {
-                    listener?.onFailure(
+                    _listener?.onFailure(
                         orderId = result.orderId,
                         reason = result.error.errorDescription,
                         code = result.error.code,
@@ -153,30 +161,63 @@ class WebCheckoutHandler(
                 }
 
                 PayPalWebCheckoutFinishStartResult.NoResult -> {
-                    listener?.onSuccess(
+                    _listener?.onSuccess(
                         orderId = intent.data?.getQueryParameter("token"),
                         payerId = intent.data?.getQueryParameter("PayerID")
                     )
                 }
 
                 is PayPalWebCheckoutFinishStartResult.Success -> {
-                    listener?.onSuccess(
+                    _listener?.onSuccess(
                         orderId = result.orderId,
                         payerId = result.payerId
                     )
                 }
 
                 null -> {
-                    listener?.onError("Something went wrong")
+                    _listener?.onError("Something went wrong")
                 }
             }
 
             // STEP 6: Reset client and listener
-            checkoutClient = null
-            listener = null
+            _checkoutClient = null
+            _listener = null
+            _currentlyProcessingOrderId = null
             return true
         }
         return false
+    }
+
+    /**
+     * Handles the lifecycle event when the app is resumed.
+     *
+     * This method checks if the user has returned to the app without completing the
+     * checkout process via the deep link (`onNewIntent`). This can happen, for example,
+     * if the user manually navigates back to the app or closes the browser.
+     *
+     * If `onNewIntent` was not called and a checkout session is active, it waits for a
+     * brief moment (2 seconds) to ensure it's not a false positive, then cancels the
+     * checkout process, sends a cancellation event, and cleans up the associated resources.
+     *
+     * The early return `if (_isCheckoutOnIntentCalled) return` prevents this cancellation
+     * logic from running if the checkout flow has already been handled by `onNewIntent`.
+     */
+    fun onResume() {
+        if (_checkoutClient != null && _listener != null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(2000)
+
+                // If the checkout flow has already been handled by onNewIntent, return early
+                if (_isCheckoutOnIntentCalled) return@launch
+
+                // Cancel the checkout process and send a cancellation event
+                _listener?.onCanceled(_currentlyProcessingOrderId)
+
+                _checkoutClient = null
+                _listener = null
+                _currentlyProcessingOrderId = null
+            }
+        }
     }
 
     /**

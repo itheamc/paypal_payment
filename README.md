@@ -1,5 +1,11 @@
 # paypal_payment_flutter
 
+[![Pub](https://img.shields.io/pub/v/naxalibre)](https://pub.dev/packages/paypal_payment_flutter)
+[![License](https://img.shields.io/github/license/itheamc/naxalibre)](https://github.com/itheamc/paypal_payment/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/itheamc/naxalibre.svg?style=social)](https://github.com/itheamc/paypal_payment)
+
+## Overview
+
 A comprehensive Flutter plugin for integrating PayPal payments into your Flutter application. This plugin supports both Android and iOS platforms and provides access to PayPal's Orders API, Payments API (v1 & v2), Transactions API, and Checkout flows.
 
 ## Features

@@ -1,3 +1,9 @@
+## 0.0.3 (13 Dec, 2025)
+
+* Support for card payments sdk
+* Renamed startNativeCheckout method to initiateWebPaymentRequest in orders api
+* Added initiateCardPaymentRequest method in orders api
+
 ## 0.0.2 (13 Dec, 2025)
 
 * Added documented comments for enhanced pup score 

@@ -128,24 +128,34 @@ func deepHashPigeonGenerated(value: Any?, hasher: inout Hasher) {
 
     
 
+/// --- Result Event Structures ---
+/// For Paypal Web Payment Request Result
+///
+/// Base sealed class for all possible outcomes of a PayPal Web Payment request.
+/// Sealed classes help ensure all result types are handled in Dart.
+///
 /// Generated class from Pigeon that represents data sent in messages.
 /// This protocol should not be extended by any user class outside of the generated file.
-protocol PayPalWebCheckoutResultEvent {
+protocol PaypalWebPaymentRequestResultEvent {
 
 }
 
+/// Represents a successful completion of the PayPal Web Payment flow.
+///
 /// Generated class from Pigeon that represents data sent in messages.
-struct PayPalWebCheckoutSuccessResultEvent: PayPalWebCheckoutResultEvent {
+struct PaypalWebPaymentRequestSuccessResultEvent: PaypalWebPaymentRequestResultEvent {
+  /// The ID of the successfully completed order.
   var orderId: String? = nil
+  /// The ID of the payer provided by PayPal.
   var payerId: String? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  static func fromList(_ pigeonVar_list: [Any?]) -> PayPalWebCheckoutSuccessResultEvent? {
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalWebPaymentRequestSuccessResultEvent? {
     let orderId: String? = nilOrValue(pigeonVar_list[0])
     let payerId: String? = nilOrValue(pigeonVar_list[1])
 
-    return PayPalWebCheckoutSuccessResultEvent(
+    return PaypalWebPaymentRequestSuccessResultEvent(
       orderId: orderId,
       payerId: payerId
     )
@@ -156,29 +166,35 @@ struct PayPalWebCheckoutSuccessResultEvent: PayPalWebCheckoutResultEvent {
       payerId,
     ]
   }
-  static func == (lhs: PayPalWebCheckoutSuccessResultEvent, rhs: PayPalWebCheckoutSuccessResultEvent) -> Bool {
+  static func == (lhs: PaypalWebPaymentRequestSuccessResultEvent, rhs: PaypalWebPaymentRequestSuccessResultEvent) -> Bool {
     return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
     deepHashPigeonGenerated(value: toList(), hasher: &hasher)
   }
 }
 
+/// Represents a failure during the PayPal Web Payment process.
+///
 /// Generated class from Pigeon that represents data sent in messages.
-struct PayPalWebCheckoutFailureResultEvent: PayPalWebCheckoutResultEvent {
+struct PaypalWebPaymentRequestFailureResultEvent: PaypalWebPaymentRequestResultEvent {
+  /// The ID of the order that failed.
   var orderId: String? = nil
+  /// A human-readable description of the failure.
   var reason: String
+  /// A numeric error code associated with the failure.
   var code: Int64
+  /// A unique ID that can be used to correlate the failure with server logs.
   var correlationId: String? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  static func fromList(_ pigeonVar_list: [Any?]) -> PayPalWebCheckoutFailureResultEvent? {
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalWebPaymentRequestFailureResultEvent? {
     let orderId: String? = nilOrValue(pigeonVar_list[0])
     let reason = pigeonVar_list[1] as! String
     let code = pigeonVar_list[2] as! Int64
     let correlationId: String? = nilOrValue(pigeonVar_list[3])
 
-    return PayPalWebCheckoutFailureResultEvent(
+    return PaypalWebPaymentRequestFailureResultEvent(
       orderId: orderId,
       reason: reason,
       code: code,
@@ -193,23 +209,26 @@ struct PayPalWebCheckoutFailureResultEvent: PayPalWebCheckoutResultEvent {
       correlationId,
     ]
   }
-  static func == (lhs: PayPalWebCheckoutFailureResultEvent, rhs: PayPalWebCheckoutFailureResultEvent) -> Bool {
+  static func == (lhs: PaypalWebPaymentRequestFailureResultEvent, rhs: PaypalWebPaymentRequestFailureResultEvent) -> Bool {
     return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
     deepHashPigeonGenerated(value: toList(), hasher: &hasher)
   }
 }
 
+/// Represents the case where the user cancels the PayPal Web Payment flow.
+///
 /// Generated class from Pigeon that represents data sent in messages.
-struct PayPalWebCheckoutCanceledResultEvent: PayPalWebCheckoutResultEvent {
+struct PaypalWebPaymentRequestCanceledResultEvent: PaypalWebPaymentRequestResultEvent {
+  /// The ID of the order that was cancelled.
   var orderId: String? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  static func fromList(_ pigeonVar_list: [Any?]) -> PayPalWebCheckoutCanceledResultEvent? {
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalWebPaymentRequestCanceledResultEvent? {
     let orderId: String? = nilOrValue(pigeonVar_list[0])
 
-    return PayPalWebCheckoutCanceledResultEvent(
+    return PaypalWebPaymentRequestCanceledResultEvent(
       orderId: orderId
     )
   }
@@ -218,23 +237,26 @@ struct PayPalWebCheckoutCanceledResultEvent: PayPalWebCheckoutResultEvent {
       orderId
     ]
   }
-  static func == (lhs: PayPalWebCheckoutCanceledResultEvent, rhs: PayPalWebCheckoutCanceledResultEvent) -> Bool {
+  static func == (lhs: PaypalWebPaymentRequestCanceledResultEvent, rhs: PaypalWebPaymentRequestCanceledResultEvent) -> Bool {
     return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
     deepHashPigeonGenerated(value: toList(), hasher: &hasher)
   }
 }
 
+/// Represents a critical error in the host platform's logic or SDK communication.
+///
 /// Generated class from Pigeon that represents data sent in messages.
-struct PayPalWebCheckoutErrorResultEvent: PayPalWebCheckoutResultEvent {
+struct PaypalWebPaymentRequestErrorResultEvent: PaypalWebPaymentRequestResultEvent {
+  /// A detailed error message string.
   var error: String? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  static func fromList(_ pigeonVar_list: [Any?]) -> PayPalWebCheckoutErrorResultEvent? {
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalWebPaymentRequestErrorResultEvent? {
     let error: String? = nilOrValue(pigeonVar_list[0])
 
-    return PayPalWebCheckoutErrorResultEvent(
+    return PaypalWebPaymentRequestErrorResultEvent(
       error: error
     )
   }
@@ -243,7 +265,260 @@ struct PayPalWebCheckoutErrorResultEvent: PayPalWebCheckoutResultEvent {
       error
     ]
   }
-  static func == (lhs: PayPalWebCheckoutErrorResultEvent, rhs: PayPalWebCheckoutErrorResultEvent) -> Bool {
+  static func == (lhs: PaypalWebPaymentRequestErrorResultEvent, rhs: PaypalWebPaymentRequestErrorResultEvent) -> Bool {
+    return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashPigeonGenerated(value: toList(), hasher: &hasher)
+  }
+}
+
+/// For Paypal Card Payment Request Result
+///
+/// Base sealed class for all possible outcomes of a PayPal Card Payment request.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+/// This protocol should not be extended by any user class outside of the generated file.
+protocol PaypalCardPaymentRequestResultEvent {
+
+}
+
+/// Represents a successful completion of the PayPal Card Payment flow.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct PaypalCardPaymentRequestSuccessResultEvent: PaypalCardPaymentRequestResultEvent {
+  /// The ID of the successfully completed order.
+  var orderId: String? = nil
+  /// The status of the card payment transaction.
+  var status: String? = nil
+  /// Indicates whether 3D Secure Authentication was attempted for the transaction.
+  var didAttemptThreeDSecureAuthentication: Bool
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalCardPaymentRequestSuccessResultEvent? {
+    let orderId: String? = nilOrValue(pigeonVar_list[0])
+    let status: String? = nilOrValue(pigeonVar_list[1])
+    let didAttemptThreeDSecureAuthentication = pigeonVar_list[2] as! Bool
+
+    return PaypalCardPaymentRequestSuccessResultEvent(
+      orderId: orderId,
+      status: status,
+      didAttemptThreeDSecureAuthentication: didAttemptThreeDSecureAuthentication
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      orderId,
+      status,
+      didAttemptThreeDSecureAuthentication,
+    ]
+  }
+  static func == (lhs: PaypalCardPaymentRequestSuccessResultEvent, rhs: PaypalCardPaymentRequestSuccessResultEvent) -> Bool {
+    return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashPigeonGenerated(value: toList(), hasher: &hasher)
+  }
+}
+
+/// Represents a failure during the PayPal Card Payment process.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct PaypalCardPaymentRequestFailureResultEvent: PaypalCardPaymentRequestResultEvent {
+  /// The ID of the order that failed.
+  var orderId: String? = nil
+  /// A human-readable description of the failure.
+  var reason: String
+  /// A numeric error code associated with the failure.
+  var code: Int64
+  /// A unique ID that can be used to correlate the failure with server logs.
+  var correlationId: String? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalCardPaymentRequestFailureResultEvent? {
+    let orderId: String? = nilOrValue(pigeonVar_list[0])
+    let reason = pigeonVar_list[1] as! String
+    let code = pigeonVar_list[2] as! Int64
+    let correlationId: String? = nilOrValue(pigeonVar_list[3])
+
+    return PaypalCardPaymentRequestFailureResultEvent(
+      orderId: orderId,
+      reason: reason,
+      code: code,
+      correlationId: correlationId
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      orderId,
+      reason,
+      code,
+      correlationId,
+    ]
+  }
+  static func == (lhs: PaypalCardPaymentRequestFailureResultEvent, rhs: PaypalCardPaymentRequestFailureResultEvent) -> Bool {
+    return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashPigeonGenerated(value: toList(), hasher: &hasher)
+  }
+}
+
+/// Represents the case where the user cancels the PayPal Card Payment flow (e.g., during 3DS challenge).
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct PaypalCardPaymentRequestCanceledResultEvent: PaypalCardPaymentRequestResultEvent {
+  /// The ID of the order that was cancelled.
+  var orderId: String? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalCardPaymentRequestCanceledResultEvent? {
+    let orderId: String? = nilOrValue(pigeonVar_list[0])
+
+    return PaypalCardPaymentRequestCanceledResultEvent(
+      orderId: orderId
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      orderId
+    ]
+  }
+  static func == (lhs: PaypalCardPaymentRequestCanceledResultEvent, rhs: PaypalCardPaymentRequestCanceledResultEvent) -> Bool {
+    return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashPigeonGenerated(value: toList(), hasher: &hasher)
+  }
+}
+
+/// Represents a critical error in the host platform's logic or SDK communication for card payments.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct PaypalCardPaymentRequestErrorResultEvent: PaypalCardPaymentRequestResultEvent {
+  /// A detailed error message string.
+  var error: String? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaypalCardPaymentRequestErrorResultEvent? {
+    let error: String? = nilOrValue(pigeonVar_list[0])
+
+    return PaypalCardPaymentRequestErrorResultEvent(
+      error: error
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      error
+    ]
+  }
+  static func == (lhs: PaypalCardPaymentRequestErrorResultEvent, rhs: PaypalCardPaymentRequestErrorResultEvent) -> Bool {
+    return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashPigeonGenerated(value: toList(), hasher: &hasher)
+  }
+}
+
+/// Data structure representing the details of a payment card.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct CardData: Hashable {
+  /// The card's primary account number.
+  var number: String
+  /// The expiration month of the card (e.g., '08').
+  var expirationMonth: String
+  /// The expiration year of the card (e.g., '2025').
+  var expirationYear: String
+  /// The 3- or 4-digit security code (CVV/CVC).
+  var securityCode: String
+  /// The name of the cardholder as it appears on the card.
+  var cardholderName: String
+  /// The billing address associated with the card.
+  var billingAddress: BillingAddressData
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> CardData? {
+    let number = pigeonVar_list[0] as! String
+    let expirationMonth = pigeonVar_list[1] as! String
+    let expirationYear = pigeonVar_list[2] as! String
+    let securityCode = pigeonVar_list[3] as! String
+    let cardholderName = pigeonVar_list[4] as! String
+    let billingAddress = pigeonVar_list[5] as! BillingAddressData
+
+    return CardData(
+      number: number,
+      expirationMonth: expirationMonth,
+      expirationYear: expirationYear,
+      securityCode: securityCode,
+      cardholderName: cardholderName,
+      billingAddress: billingAddress
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      number,
+      expirationMonth,
+      expirationYear,
+      securityCode,
+      cardholderName,
+      billingAddress,
+    ]
+  }
+  static func == (lhs: CardData, rhs: CardData) -> Bool {
+    return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashPigeonGenerated(value: toList(), hasher: &hasher)
+  }
+}
+
+/// Data structure representing the billing address for a payment card.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct BillingAddressData: Hashable {
+  /// The two-letter country code (e.g., 'US', 'GB'). (Required)
+  var countryCode: String
+  /// The first line of the street address. (Optional)
+  var streetAddress: String? = nil
+  /// The second line of the street address, if any. (Optional)
+  var extendedAddress: String? = nil
+  /// The city or locality. (Optional)
+  var locality: String? = nil
+  /// The state, province, or region. (Optional)
+  var region: String? = nil
+  /// The postal or ZIP code. (Optional)
+  var postalCode: String? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> BillingAddressData? {
+    let countryCode = pigeonVar_list[0] as! String
+    let streetAddress: String? = nilOrValue(pigeonVar_list[1])
+    let extendedAddress: String? = nilOrValue(pigeonVar_list[2])
+    let locality: String? = nilOrValue(pigeonVar_list[3])
+    let region: String? = nilOrValue(pigeonVar_list[4])
+    let postalCode: String? = nilOrValue(pigeonVar_list[5])
+
+    return BillingAddressData(
+      countryCode: countryCode,
+      streetAddress: streetAddress,
+      extendedAddress: extendedAddress,
+      locality: locality,
+      region: region,
+      postalCode: postalCode
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      countryCode,
+      streetAddress,
+      extendedAddress,
+      locality,
+      region,
+      postalCode,
+    ]
+  }
+  static func == (lhs: BillingAddressData, rhs: BillingAddressData) -> Bool {
     return deepEqualsPigeonGenerated(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
     deepHashPigeonGenerated(value: toList(), hasher: &hasher)
@@ -254,13 +529,25 @@ private class PigeonGeneratedPigeonCodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
     case 129:
-      return PayPalWebCheckoutSuccessResultEvent.fromList(self.readValue() as! [Any?])
+      return PaypalWebPaymentRequestSuccessResultEvent.fromList(self.readValue() as! [Any?])
     case 130:
-      return PayPalWebCheckoutFailureResultEvent.fromList(self.readValue() as! [Any?])
+      return PaypalWebPaymentRequestFailureResultEvent.fromList(self.readValue() as! [Any?])
     case 131:
-      return PayPalWebCheckoutCanceledResultEvent.fromList(self.readValue() as! [Any?])
+      return PaypalWebPaymentRequestCanceledResultEvent.fromList(self.readValue() as! [Any?])
     case 132:
-      return PayPalWebCheckoutErrorResultEvent.fromList(self.readValue() as! [Any?])
+      return PaypalWebPaymentRequestErrorResultEvent.fromList(self.readValue() as! [Any?])
+    case 133:
+      return PaypalCardPaymentRequestSuccessResultEvent.fromList(self.readValue() as! [Any?])
+    case 134:
+      return PaypalCardPaymentRequestFailureResultEvent.fromList(self.readValue() as! [Any?])
+    case 135:
+      return PaypalCardPaymentRequestCanceledResultEvent.fromList(self.readValue() as! [Any?])
+    case 136:
+      return PaypalCardPaymentRequestErrorResultEvent.fromList(self.readValue() as! [Any?])
+    case 137:
+      return CardData.fromList(self.readValue() as! [Any?])
+    case 138:
+      return BillingAddressData.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
     }
@@ -269,17 +556,35 @@ private class PigeonGeneratedPigeonCodecReader: FlutterStandardReader {
 
 private class PigeonGeneratedPigeonCodecWriter: FlutterStandardWriter {
   override func writeValue(_ value: Any) {
-    if let value = value as? PayPalWebCheckoutSuccessResultEvent {
+    if let value = value as? PaypalWebPaymentRequestSuccessResultEvent {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? PayPalWebCheckoutFailureResultEvent {
+    } else if let value = value as? PaypalWebPaymentRequestFailureResultEvent {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? PayPalWebCheckoutCanceledResultEvent {
+    } else if let value = value as? PaypalWebPaymentRequestCanceledResultEvent {
       super.writeByte(131)
       super.writeValue(value.toList())
-    } else if let value = value as? PayPalWebCheckoutErrorResultEvent {
+    } else if let value = value as? PaypalWebPaymentRequestErrorResultEvent {
       super.writeByte(132)
+      super.writeValue(value.toList())
+    } else if let value = value as? PaypalCardPaymentRequestSuccessResultEvent {
+      super.writeByte(133)
+      super.writeValue(value.toList())
+    } else if let value = value as? PaypalCardPaymentRequestFailureResultEvent {
+      super.writeByte(134)
+      super.writeValue(value.toList())
+    } else if let value = value as? PaypalCardPaymentRequestCanceledResultEvent {
+      super.writeByte(135)
+      super.writeValue(value.toList())
+    } else if let value = value as? PaypalCardPaymentRequestErrorResultEvent {
+      super.writeByte(136)
+      super.writeValue(value.toList())
+    } else if let value = value as? CardData {
+      super.writeByte(137)
+      super.writeValue(value.toList())
+    } else if let value = value as? BillingAddressData {
+      super.writeByte(138)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -305,6 +610,10 @@ var pigeonGeneratedPigeonMethodCodec = FlutterStandardMethodCodec(readerWriter: 
 
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol PaypalPaymentHostApi {
+  /// Initializes the PayPal SDK with the provided client ID and environment.
+  ///
+  /// [clientId]: The unique client ID for the PayPal application.
+  /// [environment]: The environment (e.g., 'live', 'sandbox').
   func initialize(clientId: String, environment: String) throws
 }
 
@@ -314,6 +623,10 @@ class PaypalPaymentHostApiSetup {
   /// Sets up an instance of `PaypalPaymentHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PaypalPaymentHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    /// Initializes the PayPal SDK with the provided client ID and environment.
+    ///
+    /// [clientId]: The unique client ID for the PayPal application.
+    /// [environment]: The environment (e.g., 'live', 'sandbox').
     let initializeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       initializeChannel.setMessageHandler { message, reply in
@@ -332,32 +645,84 @@ class PaypalPaymentHostApiSetup {
     }
   }
 }
+/// Host API for handling PayPal Web/App-based payments (e.g., "Pay with PayPal").
+///
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
-protocol PayPalPaymentWebCheckoutHostApi {
-  func startCheckout(orderId: String, fundingSource: String) throws
+protocol PaypalWebPaymentHostApi {
+  /// Initiates a PayPal web-based payment request.
+  ///
+  /// [orderId] The ID of the order created on the server-side.
+  /// [fundingSource] The preferred funding source (e.g., 'paypal', 'paylater').
+  func initiatePaymentRequest(orderId: String, fundingSource: String) throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
-class PayPalPaymentWebCheckoutHostApiSetup {
+class PaypalWebPaymentHostApiSetup {
   static var codec: FlutterStandardMessageCodec { PigeonGeneratedPigeonCodec.shared }
-  /// Sets up an instance of `PayPalPaymentWebCheckoutHostApi` to handle messages through the `binaryMessenger`.
-  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PayPalPaymentWebCheckoutHostApi?, messageChannelSuffix: String = "") {
+  /// Sets up an instance of `PaypalWebPaymentHostApi` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PaypalWebPaymentHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let startCheckoutChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment_flutter.PayPalPaymentWebCheckoutHostApi.startCheckout\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    /// Initiates a PayPal web-based payment request.
+    ///
+    /// [orderId] The ID of the order created on the server-side.
+    /// [fundingSource] The preferred funding source (e.g., 'paypal', 'paylater').
+    let initiatePaymentRequestChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment_flutter.PaypalWebPaymentHostApi.initiatePaymentRequest\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      startCheckoutChannel.setMessageHandler { message, reply in
+      initiatePaymentRequestChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
         let orderIdArg = args[0] as! String
         let fundingSourceArg = args[1] as! String
         do {
-          try api.startCheckout(orderId: orderIdArg, fundingSource: fundingSourceArg)
+          try api.initiatePaymentRequest(orderId: orderIdArg, fundingSource: fundingSourceArg)
           reply(wrapResult(nil))
         } catch {
           reply(wrapError(error))
         }
       }
     } else {
-      startCheckoutChannel.setMessageHandler(nil)
+      initiatePaymentRequestChannel.setMessageHandler(nil)
+    }
+  }
+}
+/// Host API for handling PayPal card payments.
+///
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol PaypalCardPaymentHostApi {
+  /// Initiates a PayPal payment using card details.
+  ///
+  /// [orderId] The ID of the order created on the server-side.
+  /// [card] The structured data for the payment card.
+  /// [sca] A string indicating the desired Strong Customer Authentication flow (e.g., 'SCA_ALWAYS').
+  func initiatePaymentRequest(orderId: String, card: CardData, sca: String) throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class PaypalCardPaymentHostApiSetup {
+  static var codec: FlutterStandardMessageCodec { PigeonGeneratedPigeonCodec.shared }
+  /// Sets up an instance of `PaypalCardPaymentHostApi` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PaypalCardPaymentHostApi?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    /// Initiates a PayPal payment using card details.
+    ///
+    /// [orderId] The ID of the order created on the server-side.
+    /// [card] The structured data for the payment card.
+    /// [sca] A string indicating the desired Strong Customer Authentication flow (e.g., 'SCA_ALWAYS').
+    let initiatePaymentRequestChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment_flutter.PaypalCardPaymentHostApi.initiatePaymentRequest\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      initiatePaymentRequestChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let orderIdArg = args[0] as! String
+        let cardArg = args[1] as! CardData
+        let scaArg = args[2] as! String
+        do {
+          try api.initiatePaymentRequest(orderId: orderIdArg, card: cardArg, sca: scaArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      initiatePaymentRequestChannel.setMessageHandler(nil)
     }
   }
 }
@@ -411,15 +776,29 @@ class PigeonEventSink<ReturnType> {
 
 }
 
-class PayPalWebCheckoutResultEventStreamHandler: PigeonEventChannelWrapper<PayPalWebCheckoutResultEvent> {
+class PaypalWebPaymentRequestResultEventStreamHandler: PigeonEventChannelWrapper<PaypalWebPaymentRequestResultEvent> {
   static func register(with messenger: FlutterBinaryMessenger,
                       instanceName: String = "",
-                      streamHandler: PayPalWebCheckoutResultEventStreamHandler) {
-    var channelName = "dev.flutter.pigeon.paypal_payment_flutter.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent"
+                      streamHandler: PaypalWebPaymentRequestResultEventStreamHandler) {
+    var channelName = "dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentRequestResultEventChannelApi.paypalWebPaymentRequestResultEvent"
     if !instanceName.isEmpty {
       channelName += ".\(instanceName)"
     }
-    let internalStreamHandler = PigeonStreamHandler<PayPalWebCheckoutResultEvent>(wrapper: streamHandler)
+    let internalStreamHandler = PigeonStreamHandler<PaypalWebPaymentRequestResultEvent>(wrapper: streamHandler)
+    let channel = FlutterEventChannel(name: channelName, binaryMessenger: messenger, codec: pigeonGeneratedPigeonMethodCodec)
+    channel.setStreamHandler(internalStreamHandler)
+  }
+}
+      
+class PaypalCardPaymentRequestResultEventStreamHandler: PigeonEventChannelWrapper<PaypalCardPaymentRequestResultEvent> {
+  static func register(with messenger: FlutterBinaryMessenger,
+                      instanceName: String = "",
+                      streamHandler: PaypalCardPaymentRequestResultEventStreamHandler) {
+    var channelName = "dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentRequestResultEventChannelApi.paypalCardPaymentRequestResultEvent"
+    if !instanceName.isEmpty {
+      channelName += ".\(instanceName)"
+    }
+    let internalStreamHandler = PigeonStreamHandler<PaypalCardPaymentRequestResultEvent>(wrapper: streamHandler)
     let channel = FlutterEventChannel(name: channelName, binaryMessenger: messenger, codec: pigeonGeneratedPigeonMethodCodec)
     channel.setStreamHandler(internalStreamHandler)
   }

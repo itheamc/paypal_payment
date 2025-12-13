@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:paypal_payment/paypal_payment.dart';
-import 'package:paypal_payment/src/network/paypal_http_service.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
+import 'package:paypal_payment_flutter/src/network/paypal_http_service.dart';
 
 // Mock classes to prevent WebView crash
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';

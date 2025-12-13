@@ -1,4 +1,4 @@
-group = "com.itheamc.paypal_payment"
+group = "com.itheamc.paypal_payment_flutter"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.11.1")
+        classpath("com.android.tools.build:gradle:8.13.2")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
@@ -25,7 +25,7 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 android {
-    namespace = "com.itheamc.paypal_payment"
+    namespace = "com.itheamc.paypal_payment_flutter"
 
     compileSdk = 36
 
@@ -48,11 +48,10 @@ android {
     }
 
     dependencies {
-        implementation 'com.paypal.android:card-payments:2.3.0'
         implementation 'com.paypal.android:paypal-web-payments:2.3.0'
 
         testImplementation("org.jetbrains.kotlin:kotlin-test")
-        testImplementation("org.mockito:mockito-core:5.0.0")
+        testImplementation("org.mockito:mockito-core:5.20.0")
     }
 
     testOptions {
@@ -60,9 +59,9 @@ android {
             useJUnitPlatform()
 
             testLogging {
-               events "passed", "skipped", "failed", "standardOut", "standardError"
-               outputs.upToDateWhen {false}
-               showStandardStreams = true
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
             }
         }
     }

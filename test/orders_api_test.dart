@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:paypal_payment/paypal_payment.dart';
-import 'package:paypal_payment/src/network/paypal_http_service.dart';
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
+import 'package:paypal_payment_flutter/src/network/paypal_http_service.dart';
 
 void main() {
   group('OrdersApi Tests', () {

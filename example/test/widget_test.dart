@@ -6,8 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:paypal_payment_example/main.dart';
+import 'package:paypal_payment_flutter_example/main.dart';
 
 void main() {
   testWidgets('Verify Home Screen loads', (WidgetTester tester) async {

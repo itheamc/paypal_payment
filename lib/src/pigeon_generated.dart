@@ -265,7 +265,7 @@ class PaypalPaymentHostApi {
 
   Future<void> initialize(String clientId, String environment) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -308,7 +308,7 @@ class PayPalPaymentWebCheckoutHostApi {
 
   Future<void> startCheckout(String orderId, String fundingSource) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.paypal_payment_flutter.PayPalPaymentWebCheckoutHostApi.startCheckout$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -339,7 +339,7 @@ Stream<PayPalWebCheckoutResultEvent> payPalWebCheckoutResultEvent({
     instanceName = '.$instanceName';
   }
   final EventChannel payPalWebCheckoutResultEventChannel = EventChannel(
-    'dev.flutter.pigeon.paypal_payment.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent$instanceName',
+    'dev.flutter.pigeon.paypal_payment_flutter.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent$instanceName',
     pigeonMethodCodec,
   );
   return payPalWebCheckoutResultEventChannel.receiveBroadcastStream().map((

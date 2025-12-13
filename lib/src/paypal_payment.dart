@@ -1,5 +1,5 @@
-import 'package:paypal_payment/src/config/env/env.dart';
 import 'api/checkout/checkout_api.dart';
+import 'config/env/env.dart';
 import 'config/env/env_keys.dart';
 import 'config/environment.dart';
 import 'api/orders/orders_api.dart';

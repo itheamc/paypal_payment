@@ -1,4 +1,4 @@
-package com.itheamc.paypal_payment
+package com.itheamc.paypal_payment_flutter
 
 import FlutterError
 import PayPalPaymentWebCheckoutHostApi

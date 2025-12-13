@@ -314,7 +314,7 @@ class PaypalPaymentHostApiSetup {
   /// Sets up an instance of `PaypalPaymentHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PaypalPaymentHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let initializeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment.PaypalPaymentHostApi.initialize\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let initializeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       initializeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -343,7 +343,7 @@ class PayPalPaymentWebCheckoutHostApiSetup {
   /// Sets up an instance of `PayPalPaymentWebCheckoutHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: PayPalPaymentWebCheckoutHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let startCheckoutChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment.PayPalPaymentWebCheckoutHostApi.startCheckout\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let startCheckoutChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.paypal_payment_flutter.PayPalPaymentWebCheckoutHostApi.startCheckout\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       startCheckoutChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -415,7 +415,7 @@ class PayPalWebCheckoutResultEventStreamHandler: PigeonEventChannelWrapper<PayPa
   static func register(with messenger: FlutterBinaryMessenger,
                       instanceName: String = "",
                       streamHandler: PayPalWebCheckoutResultEventStreamHandler) {
-    var channelName = "dev.flutter.pigeon.paypal_payment.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent"
+    var channelName = "dev.flutter.pigeon.paypal_payment_flutter.PayPalWebCheckoutResultEventChannelApi.payPalWebCheckoutResultEvent"
     if !instanceName.isEmpty {
       channelName += ".\(instanceName)"
     }

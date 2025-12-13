@@ -1,6 +1,9 @@
 import '../../../models/amount.dart';
 import '../../../models/link.dart';
 
+/// Represents the response body for a request that retrieves a list of transactions.
+/// It includes the transaction details, pagination information, and account details.
+///
 class TransactionsListResponse {
   TransactionsListResponse({
     this.transactionDetails = const [],

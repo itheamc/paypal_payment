@@ -118,13 +118,11 @@ class CheckoutApi {
           // STEP 3: Start PayPal Native Checkout UI
           _orders.startNativeCheckout(
             orderId: orderId,
-            onError: (err) {
-              onError?.call("Native checkout error: $err");
-            },
+            onError: onError,
 
             // When the checkout UI returns a failure
             onFailure: (orderId, reason, code, correlationId) {
-              onError?.call("Checkout failed due to $reason");
+              onError?.call(reason);
             },
 
             // When user cancels the checkout

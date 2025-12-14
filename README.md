@@ -11,6 +11,7 @@ A comprehensive Flutter plugin for integrating PayPal payments into your Flutter
 ## Features
 
 - ✅ **Orders API**: Create, capture, and authorize orders
+- ✅ **Card Payments**: Accept credit and debit card payments with 3D Secure support
 - ✅ **Payments API V1**: Create, execute, capture, void, and refund payments
 - ✅ **Payments API V2**: Capture, void, and refund authorized payments
 - ✅ **Transactions API**: List and search transaction history
@@ -23,7 +24,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  paypal_payment_flutter: ^0.0.2
+  paypal_payment_flutter: ^0.0.3
 ```
 
 Then run:
@@ -34,14 +35,30 @@ flutter pub get
 
 ## Setup
 
-### 1. Get PayPal Credentials
+### 1. Android Manifest Setup
+
+To handle the redirect from the PayPal payment flow back to your app, you need to configure a custom URL scheme in your `AndroidManifest.xml` file. This allows your app to open automatically when the payment is complete.
+1.  Open `android/app/src/main/AndroidManifest.xml`.
+2.  Locate the `<activity>` tag with the `android:name=".MainActivity"`.
+3.  Add the following `<intent-filter>` inside the `<activity>` tag:
+
+```xml
+<intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="itheamc" android:host="paypal" />
+</intent-filter>
+```
+
+### 2. Get PayPal Credentials
 
 1. Go to [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/)
 2. Create a new app or select an existing one
 3. Copy your **Client ID** and **Secret**
 4. Use **Sandbox** credentials for testing, **Live** credentials for production
 
-### 2. Create .env File
+### 3. Create .env File
 
 Create a `.env` file in the root of your Flutter project:
 
@@ -62,7 +79,7 @@ PAYPAL_CLIENT_SECRET=EEpm782H_lewazmVlIlotj-3W8YNeEYXKFAmHYJk-4M9bsE1uC5Ptv8K686
 > .env
 > ```
 
-### 3. Add .env to Assets
+### 4. Add .env to Assets
 
 Update your `pubspec.yaml` to include the `.env` file as an asset:
 
@@ -72,7 +89,7 @@ flutter:
     - .env
 ```
 
-### 4. Initialize PayPal
+### 5. Initialize PayPal
 
 Initialize the PayPal plugin in your app's main function or before using any PayPal APIs:
 
@@ -456,6 +473,223 @@ Future<void> listTransactions() async {
   
 }
 ```
+
+### Card Payment API
+
+The Card Payment API allows you to accept credit and debit card payments directly. It supports 3D Secure authentication and handles the complete payment flow.
+
+> **⚠️ Security Notice**
+> Card details are highly sensitive. Never log, store, or cache card information. Always handle card data according to PCI-DSS guidelines.
+
+#### Card Payment Models
+
+**CardDetail**: Contains the card information required for payment.
+
+```dart
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
+
+final cardDetail = CardDetail(
+  number: '4111111111111111',           // Card number (13-19 digits)
+  expirationMonth: '12',                // Expiration month (MM format)
+  expirationYear: '2025',               // Expiration year (YYYY format)
+  securityCode: '123',                  // CVV/CVC (3-4 digits)
+  cardholderName: 'John Doe',           // Name on card
+  billingAddress: BillingAddress(
+    countryCode: 'US',                  // Required: ISO 3166-1 alpha-2 code
+    streetAddress: '123 Main Street',   // Optional: Street address
+    extendedAddress: 'Apt 4B',          // Optional: Apartment/Suite
+    locality: 'San Francisco',          // Optional: City
+    region: 'CA',                       // Optional: State/Province
+    postalCode: '94105',                // Optional: ZIP/Postal code
+  ),
+);
+```
+
+**SCA (Strong Customer Authentication)**: Controls when 3D Secure authentication is performed.
+
+```dart
+enum SCA {
+  whenRequired,  // Default: Only when mandated by regulation
+  always,        // Always perform 3D Secure
+}
+```
+
+#### Checkout with Card Payment
+
+The simplest way to accept card payments is using the `checkoutOrderWithCard` method, which handles the entire flow:
+
+```dart
+Future<void> checkoutWithCard() async {
+  // Define card details
+  final cardDetail = CardDetail(
+    number: '4111111111111111',
+    expirationMonth: '12',
+    expirationYear: '2025',
+    securityCode: '123',
+    cardholderName: 'John Doe',
+    billingAddress: BillingAddress(
+      countryCode: 'US',
+      streetAddress: '123 Main Street',
+      locality: 'San Francisco',
+      region: 'CA',
+      postalCode: '94105',
+    ),
+  );
+
+  // Process card payment
+  await PaypalPayment.instance.checkout.checkoutOrderWithCard(
+    intent: OrderIntent.capture,
+    purchaseUnits: [
+      PurchaseUnit(
+        referenceId: 'default',
+        amount: Amount(
+          currencyCode: 'USD',
+          value: '100.00',
+        ),
+      ),
+    ],
+    cardDetail: cardDetail,
+    sca: SCA.whenRequired,  // Optional: defaults to whenRequired
+    onInitiated: () {
+      print('Card payment initiated');
+    },
+    onSuccess: (orderId) {
+      print('Payment successful! Order ID: $orderId');
+      // Order is automatically captured
+    },
+    onError: (error) {
+      print('Payment failed: $error');
+    },
+  );
+}
+```
+
+#### Manual Card Payment Flow
+
+For more control, you can manually handle each step:
+
+```dart
+import 'package:paypal_payment_flutter/paypal_payment_flutter.dart';
+
+class ManualCardPayment extends StatefulWidget {
+  @override
+  _ManualCardPaymentState createState() => _ManualCardPaymentState();
+}
+
+class _ManualCardPaymentState extends State<ManualCardPayment> {
+  String? orderId;
+
+  // Step 1: Create the order
+  Future<void> createOrder() async {
+    await PaypalPayment.instance.orders.createOrder(
+      intent: OrderIntent.capture,
+      purchaseUnits: [
+        PurchaseUnit(
+          referenceId: 'default',
+          amount: Amount(
+            currencyCode: 'USD',
+            value: '100.00',
+          ),
+        ),
+      ],
+      onSuccess: (response) {
+        setState(() {
+          orderId = response.id;
+        });
+        
+        // Step 2: Initiate card payment
+        if (orderId != null) {
+          initiateCardPayment(orderId!);
+        }
+      },
+      onError: (error) {
+        print('Order creation failed: $error');
+      },
+    );
+  }
+
+  // Step 2: Initiate card payment request
+  Future<void> initiateCardPayment(String orderId) async {
+    final cardDetail = CardDetail(
+      number: '4111111111111111',
+      expirationMonth: '12',
+      expirationYear: '2025',
+      securityCode: '123',
+      cardholderName: 'John Doe',
+      billingAddress: BillingAddress(countryCode: 'US'),
+    );
+
+    await PaypalPayment.instance.orders.initiateCardPaymentRequest(
+      orderId: orderId,
+      cardDetail: cardDetail,
+      sca: SCA.whenRequired,
+      onSuccess: (orderId, status, didAttemptThreeDSecure) {
+        print('Card payment approved');
+        print('3D Secure attempted: $didAttemptThreeDSecure');
+        
+        // Step 3: Capture the order
+        if (orderId != null) {
+          captureOrder(orderId);
+        }
+      },
+      onFailure: (orderId, reason, code, correlationId) {
+        print('Payment failed: $reason (Code: $code)');
+        print('Correlation ID: $correlationId');
+      },
+      onCancel: (orderId) {
+        print('Payment canceled by user');
+      },
+      onError: (error) {
+        print('Error: $error');
+      },
+    );
+  }
+
+  // Step 3: Capture the order
+  Future<void> captureOrder(String orderId) async {
+    await PaypalPayment.instance.orders.captureOrder(
+      orderId: orderId,
+      onSuccess: (response) {
+        print('Order captured successfully!');
+        print('Capture ID: ${response.id}');
+        print('Status: ${response.status}');
+      },
+      onError: (error) {
+        print('Capture failed: $error');
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Card Payment')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: createOrder,
+          child: Text('Pay with Card'),
+        ),
+      ),
+    );
+  }
+}
+```
+
+#### Test Card Numbers
+
+Use these test cards in the PayPal Sandbox environment:
+
+| Card Type       | Number              | CVV | Expiry      |
+|----------------|---------------------|-----|-------------|
+| Visa           | 4111111111111111    | 123 | Any future  |
+| Visa           | 4032039594896467    | 123 | Any future  |
+| MasterCard     | 5555555555554444    | 123 | Any future  |
+| MasterCard     | 2223000048410010    | 123 | Any future  |
+| Amex           | 378282246310005     | 1234| Any future  |
+| Discover       | 6011111111111117    | 123 | Any future  |
+
+> **Note**: For production, use real card details. Test cards only work in Sandbox mode.
+
 
 ### Checkout API
 

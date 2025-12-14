@@ -133,11 +133,20 @@ class CardsPaymentsHandler(
                     }
 
                     is CardApproveOrderResult.Failure -> {
-
+                        listener?.onFailure(
+                            orderId = currentlyProcessingOrderId,
+                            reason = it.error.errorDescription,
+                            code = it.error.code,
+                            correlationId = it.error.correlationId
+                        )
                     }
 
                     is CardApproveOrderResult.Success -> {
-
+                        listener?.onSuccess(
+                            orderId = it.orderId,
+                            status = it.status,
+                            didAttemptThreeDSecureAuthentication = it.didAttemptThreeDSecureAuthentication
+                        )
                     }
                 }
             }

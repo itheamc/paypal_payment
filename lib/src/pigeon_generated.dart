@@ -14,35 +14,36 @@ PlatformException _createConnectionError(String channelName) {
     message: 'Unable to establish connection on channel: "$channelName".',
   );
 }
+
 bool _deepEquals(Object? a, Object? b) {
   if (a is List && b is List) {
     return a.length == b.length &&
-        a.indexed
-        .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+        a.indexed.every(
+          ((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]),
+        );
   }
   if (a is Map && b is Map) {
-    return a.length == b.length && a.entries.every((MapEntry<Object?, Object?> entry) =>
-        (b as Map<Object?, Object?>).containsKey(entry.key) &&
-        _deepEquals(entry.value, b[entry.key]));
+    return a.length == b.length &&
+        a.entries.every(
+          (MapEntry<Object?, Object?> entry) =>
+              (b as Map<Object?, Object?>).containsKey(entry.key) &&
+              _deepEquals(entry.value, b[entry.key]),
+        );
   }
   return a == b;
 }
-
 
 /// --- Result Event Structures ---
 /// For Paypal Web Payment Request Result
 ///
 /// Base sealed class for all possible outcomes of a PayPal Web Payment request.
 /// Sealed classes help ensure all result types are handled in Dart.
-sealed class PaypalWebPaymentRequestResultEvent {
-}
+sealed class PaypalWebPaymentRequestResultEvent {}
 
 /// Represents a successful completion of the PayPal Web Payment flow.
-class PaypalWebPaymentRequestSuccessResultEvent extends PaypalWebPaymentRequestResultEvent {
-  PaypalWebPaymentRequestSuccessResultEvent({
-    this.orderId,
-    this.payerId,
-  });
+class PaypalWebPaymentRequestSuccessResultEvent
+    extends PaypalWebPaymentRequestResultEvent {
+  PaypalWebPaymentRequestSuccessResultEvent({this.orderId, this.payerId});
 
   /// The ID of the successfully completed order.
   String? orderId;
@@ -51,14 +52,12 @@ class PaypalWebPaymentRequestSuccessResultEvent extends PaypalWebPaymentRequestR
   String? payerId;
 
   List<Object?> _toList() {
-    return <Object?>[
-      orderId,
-      payerId,
-    ];
+    return <Object?>[orderId, payerId];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalWebPaymentRequestSuccessResultEvent decode(Object result) {
     result as List<Object?>;
@@ -71,7 +70,8 @@ class PaypalWebPaymentRequestSuccessResultEvent extends PaypalWebPaymentRequestR
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalWebPaymentRequestSuccessResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalWebPaymentRequestSuccessResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -82,12 +82,12 @@ class PaypalWebPaymentRequestSuccessResultEvent extends PaypalWebPaymentRequestR
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Represents a failure during the PayPal Web Payment process.
-class PaypalWebPaymentRequestFailureResultEvent extends PaypalWebPaymentRequestResultEvent {
+class PaypalWebPaymentRequestFailureResultEvent
+    extends PaypalWebPaymentRequestResultEvent {
   PaypalWebPaymentRequestFailureResultEvent({
     this.orderId,
     required this.reason,
@@ -108,16 +108,12 @@ class PaypalWebPaymentRequestFailureResultEvent extends PaypalWebPaymentRequestR
   String? correlationId;
 
   List<Object?> _toList() {
-    return <Object?>[
-      orderId,
-      reason,
-      code,
-      correlationId,
-    ];
+    return <Object?>[orderId, reason, code, correlationId];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalWebPaymentRequestFailureResultEvent decode(Object result) {
     result as List<Object?>;
@@ -132,7 +128,8 @@ class PaypalWebPaymentRequestFailureResultEvent extends PaypalWebPaymentRequestR
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalWebPaymentRequestFailureResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalWebPaymentRequestFailureResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -143,27 +140,24 @@ class PaypalWebPaymentRequestFailureResultEvent extends PaypalWebPaymentRequestR
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Represents the case where the user cancels the PayPal Web Payment flow.
-class PaypalWebPaymentRequestCanceledResultEvent extends PaypalWebPaymentRequestResultEvent {
-  PaypalWebPaymentRequestCanceledResultEvent({
-    this.orderId,
-  });
+class PaypalWebPaymentRequestCanceledResultEvent
+    extends PaypalWebPaymentRequestResultEvent {
+  PaypalWebPaymentRequestCanceledResultEvent({this.orderId});
 
   /// The ID of the order that was cancelled.
   String? orderId;
 
   List<Object?> _toList() {
-    return <Object?>[
-      orderId,
-    ];
+    return <Object?>[orderId];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalWebPaymentRequestCanceledResultEvent decode(Object result) {
     result as List<Object?>;
@@ -175,7 +169,8 @@ class PaypalWebPaymentRequestCanceledResultEvent extends PaypalWebPaymentRequest
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalWebPaymentRequestCanceledResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalWebPaymentRequestCanceledResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -186,39 +181,35 @@ class PaypalWebPaymentRequestCanceledResultEvent extends PaypalWebPaymentRequest
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Represents a critical error in the host platform's logic or SDK communication.
-class PaypalWebPaymentRequestErrorResultEvent extends PaypalWebPaymentRequestResultEvent {
-  PaypalWebPaymentRequestErrorResultEvent({
-    this.error,
-  });
+class PaypalWebPaymentRequestErrorResultEvent
+    extends PaypalWebPaymentRequestResultEvent {
+  PaypalWebPaymentRequestErrorResultEvent({this.error});
 
   /// A detailed error message string.
   String? error;
 
   List<Object?> _toList() {
-    return <Object?>[
-      error,
-    ];
+    return <Object?>[error];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalWebPaymentRequestErrorResultEvent decode(Object result) {
     result as List<Object?>;
-    return PaypalWebPaymentRequestErrorResultEvent(
-      error: result[0] as String?,
-    );
+    return PaypalWebPaymentRequestErrorResultEvent(error: result[0] as String?);
   }
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalWebPaymentRequestErrorResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalWebPaymentRequestErrorResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -229,18 +220,17 @@ class PaypalWebPaymentRequestErrorResultEvent extends PaypalWebPaymentRequestRes
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// For Paypal Card Payment Request Result
 ///
 /// Base sealed class for all possible outcomes of a PayPal Card Payment request.
-sealed class PaypalCardPaymentRequestResultEvent {
-}
+sealed class PaypalCardPaymentRequestResultEvent {}
 
 /// Represents a successful completion of the PayPal Card Payment flow.
-class PaypalCardPaymentRequestSuccessResultEvent extends PaypalCardPaymentRequestResultEvent {
+class PaypalCardPaymentRequestSuccessResultEvent
+    extends PaypalCardPaymentRequestResultEvent {
   PaypalCardPaymentRequestSuccessResultEvent({
     this.orderId,
     this.status,
@@ -257,15 +247,12 @@ class PaypalCardPaymentRequestSuccessResultEvent extends PaypalCardPaymentReques
   bool didAttemptThreeDSecureAuthentication;
 
   List<Object?> _toList() {
-    return <Object?>[
-      orderId,
-      status,
-      didAttemptThreeDSecureAuthentication,
-    ];
+    return <Object?>[orderId, status, didAttemptThreeDSecureAuthentication];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalCardPaymentRequestSuccessResultEvent decode(Object result) {
     result as List<Object?>;
@@ -279,7 +266,8 @@ class PaypalCardPaymentRequestSuccessResultEvent extends PaypalCardPaymentReques
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalCardPaymentRequestSuccessResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalCardPaymentRequestSuccessResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -290,12 +278,12 @@ class PaypalCardPaymentRequestSuccessResultEvent extends PaypalCardPaymentReques
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Represents a failure during the PayPal Card Payment process.
-class PaypalCardPaymentRequestFailureResultEvent extends PaypalCardPaymentRequestResultEvent {
+class PaypalCardPaymentRequestFailureResultEvent
+    extends PaypalCardPaymentRequestResultEvent {
   PaypalCardPaymentRequestFailureResultEvent({
     this.orderId,
     required this.reason,
@@ -316,16 +304,12 @@ class PaypalCardPaymentRequestFailureResultEvent extends PaypalCardPaymentReques
   String? correlationId;
 
   List<Object?> _toList() {
-    return <Object?>[
-      orderId,
-      reason,
-      code,
-      correlationId,
-    ];
+    return <Object?>[orderId, reason, code, correlationId];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalCardPaymentRequestFailureResultEvent decode(Object result) {
     result as List<Object?>;
@@ -340,7 +324,8 @@ class PaypalCardPaymentRequestFailureResultEvent extends PaypalCardPaymentReques
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalCardPaymentRequestFailureResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalCardPaymentRequestFailureResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -351,27 +336,24 @@ class PaypalCardPaymentRequestFailureResultEvent extends PaypalCardPaymentReques
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Represents the case where the user cancels the PayPal Card Payment flow (e.g., during 3DS challenge).
-class PaypalCardPaymentRequestCanceledResultEvent extends PaypalCardPaymentRequestResultEvent {
-  PaypalCardPaymentRequestCanceledResultEvent({
-    this.orderId,
-  });
+class PaypalCardPaymentRequestCanceledResultEvent
+    extends PaypalCardPaymentRequestResultEvent {
+  PaypalCardPaymentRequestCanceledResultEvent({this.orderId});
 
   /// The ID of the order that was cancelled.
   String? orderId;
 
   List<Object?> _toList() {
-    return <Object?>[
-      orderId,
-    ];
+    return <Object?>[orderId];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalCardPaymentRequestCanceledResultEvent decode(Object result) {
     result as List<Object?>;
@@ -383,7 +365,8 @@ class PaypalCardPaymentRequestCanceledResultEvent extends PaypalCardPaymentReque
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalCardPaymentRequestCanceledResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalCardPaymentRequestCanceledResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -394,27 +377,24 @@ class PaypalCardPaymentRequestCanceledResultEvent extends PaypalCardPaymentReque
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Represents a critical error in the host platform's logic or SDK communication for card payments.
-class PaypalCardPaymentRequestErrorResultEvent extends PaypalCardPaymentRequestResultEvent {
-  PaypalCardPaymentRequestErrorResultEvent({
-    this.error,
-  });
+class PaypalCardPaymentRequestErrorResultEvent
+    extends PaypalCardPaymentRequestResultEvent {
+  PaypalCardPaymentRequestErrorResultEvent({this.error});
 
   /// A detailed error message string.
   String? error;
 
   List<Object?> _toList() {
-    return <Object?>[
-      error,
-    ];
+    return <Object?>[error];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PaypalCardPaymentRequestErrorResultEvent decode(Object result) {
     result as List<Object?>;
@@ -426,7 +406,8 @@ class PaypalCardPaymentRequestErrorResultEvent extends PaypalCardPaymentRequestR
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PaypalCardPaymentRequestErrorResultEvent || other.runtimeType != runtimeType) {
+    if (other is! PaypalCardPaymentRequestErrorResultEvent ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -437,8 +418,7 @@ class PaypalCardPaymentRequestErrorResultEvent extends PaypalCardPaymentRequestR
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Data structure representing the details of a payment card.
@@ -482,7 +462,8 @@ class CardData {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static CardData decode(Object result) {
     result as List<Object?>;
@@ -510,8 +491,7 @@ class CardData {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 /// Data structure representing the billing address for a payment card.
@@ -555,7 +535,8 @@ class BillingAddressData {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static BillingAddressData decode(Object result) {
     result as List<Object?>;
@@ -583,10 +564,8 @@ class BillingAddressData {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
-
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -595,34 +574,34 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is PaypalWebPaymentRequestSuccessResultEvent) {
+    } else if (value is PaypalWebPaymentRequestSuccessResultEvent) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalWebPaymentRequestFailureResultEvent) {
+    } else if (value is PaypalWebPaymentRequestFailureResultEvent) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalWebPaymentRequestCanceledResultEvent) {
+    } else if (value is PaypalWebPaymentRequestCanceledResultEvent) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalWebPaymentRequestErrorResultEvent) {
+    } else if (value is PaypalWebPaymentRequestErrorResultEvent) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalCardPaymentRequestSuccessResultEvent) {
+    } else if (value is PaypalCardPaymentRequestSuccessResultEvent) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalCardPaymentRequestFailureResultEvent) {
+    } else if (value is PaypalCardPaymentRequestFailureResultEvent) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalCardPaymentRequestCanceledResultEvent) {
+    } else if (value is PaypalCardPaymentRequestCanceledResultEvent) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    }    else if (value is PaypalCardPaymentRequestErrorResultEvent) {
+    } else if (value is PaypalCardPaymentRequestErrorResultEvent) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    }    else if (value is CardData) {
+    } else if (value is CardData) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is BillingAddressData) {
+    } else if (value is BillingAddressData) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
     } else {
@@ -633,25 +612,41 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129: 
-        return PaypalWebPaymentRequestSuccessResultEvent.decode(readValue(buffer)!);
-      case 130: 
-        return PaypalWebPaymentRequestFailureResultEvent.decode(readValue(buffer)!);
-      case 131: 
-        return PaypalWebPaymentRequestCanceledResultEvent.decode(readValue(buffer)!);
-      case 132: 
-        return PaypalWebPaymentRequestErrorResultEvent.decode(readValue(buffer)!);
-      case 133: 
-        return PaypalCardPaymentRequestSuccessResultEvent.decode(readValue(buffer)!);
-      case 134: 
-        return PaypalCardPaymentRequestFailureResultEvent.decode(readValue(buffer)!);
-      case 135: 
-        return PaypalCardPaymentRequestCanceledResultEvent.decode(readValue(buffer)!);
-      case 136: 
-        return PaypalCardPaymentRequestErrorResultEvent.decode(readValue(buffer)!);
-      case 137: 
+      case 129:
+        return PaypalWebPaymentRequestSuccessResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 130:
+        return PaypalWebPaymentRequestFailureResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 131:
+        return PaypalWebPaymentRequestCanceledResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 132:
+        return PaypalWebPaymentRequestErrorResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 133:
+        return PaypalCardPaymentRequestSuccessResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 134:
+        return PaypalCardPaymentRequestFailureResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 135:
+        return PaypalCardPaymentRequestCanceledResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 136:
+        return PaypalCardPaymentRequestErrorResultEvent.decode(
+          readValue(buffer)!,
+        );
+      case 137:
         return CardData.decode(readValue(buffer)!);
-      case 138: 
+      case 138:
         return BillingAddressData.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -659,15 +654,21 @@ class _PigeonCodec extends StandardMessageCodec {
   }
 }
 
-const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(_PigeonCodec());
+const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(
+  _PigeonCodec(),
+);
 
 class PaypalPaymentHostApi {
   /// Constructor for [PaypalPaymentHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PaypalPaymentHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  PaypalPaymentHostApi({
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  }) : pigeonVar_binaryMessenger = binaryMessenger,
+       pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
+           ? '.$messageChannelSuffix'
+           : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -679,13 +680,16 @@ class PaypalPaymentHostApi {
   /// [clientId]: The unique client ID for the PayPal application.
   /// [environment]: The environment (e.g., 'live', 'sandbox').
   Future<void> initialize(String clientId, String environment) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentHostApi.initialize$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[clientId, environment]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[clientId, environment],
+    );
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -706,9 +710,13 @@ class PaypalWebPaymentHostApi {
   /// Constructor for [PaypalWebPaymentHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PaypalWebPaymentHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  PaypalWebPaymentHostApi({
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  }) : pigeonVar_binaryMessenger = binaryMessenger,
+       pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
+           ? '.$messageChannelSuffix'
+           : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -719,14 +727,20 @@ class PaypalWebPaymentHostApi {
   ///
   /// [orderId] The ID of the order created on the server-side.
   /// [fundingSource] The preferred funding source (e.g., 'paypal', 'paylater').
-  Future<void> initiatePaymentRequest(String orderId, String fundingSource) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment_flutter.PaypalWebPaymentHostApi.initiatePaymentRequest$pigeonVar_messageChannelSuffix';
+  Future<void> initiatePaymentRequest(
+    String orderId,
+    String fundingSource,
+  ) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.paypal_payment_flutter.PaypalWebPaymentHostApi.initiatePaymentRequest$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[orderId, fundingSource]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[orderId, fundingSource],
+    );
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -747,9 +761,13 @@ class PaypalCardPaymentHostApi {
   /// Constructor for [PaypalCardPaymentHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PaypalCardPaymentHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  PaypalCardPaymentHostApi({
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  }) : pigeonVar_binaryMessenger = binaryMessenger,
+       pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
+           ? '.$messageChannelSuffix'
+           : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -761,14 +779,21 @@ class PaypalCardPaymentHostApi {
   /// [orderId] The ID of the order created on the server-side.
   /// [card] The structured data for the payment card.
   /// [sca] A string indicating the desired Strong Customer Authentication flow (e.g., 'SCA_ALWAYS').
-  Future<void> initiatePaymentRequest(String orderId, CardData card, String sca) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.paypal_payment_flutter.PaypalCardPaymentHostApi.initiatePaymentRequest$pigeonVar_messageChannelSuffix';
+  Future<void> initiatePaymentRequest(
+    String orderId,
+    CardData card,
+    String sca,
+  ) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.paypal_payment_flutter.PaypalCardPaymentHostApi.initiatePaymentRequest$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[orderId, card, sca]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[orderId, card, sca],
+    );
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -784,25 +809,35 @@ class PaypalCardPaymentHostApi {
   }
 }
 
-Stream<PaypalWebPaymentRequestResultEvent> paypalWebPaymentRequestResultEvent( {String instanceName = ''}) {
+Stream<PaypalWebPaymentRequestResultEvent> paypalWebPaymentRequestResultEvent({
+  String instanceName = '',
+}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
-  final EventChannel paypalWebPaymentRequestResultEventChannel =
-      EventChannel('dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentRequestResultEventChannelApi.paypalWebPaymentRequestResultEvent$instanceName', pigeonMethodCodec);
-  return paypalWebPaymentRequestResultEventChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as PaypalWebPaymentRequestResultEvent;
-  });
+  final EventChannel paypalWebPaymentRequestResultEventChannel = EventChannel(
+    'dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentRequestResultEventChannelApi.paypalWebPaymentRequestResultEvent$instanceName',
+    pigeonMethodCodec,
+  );
+  return paypalWebPaymentRequestResultEventChannel.receiveBroadcastStream().map(
+    (dynamic event) {
+      return event as PaypalWebPaymentRequestResultEvent;
+    },
+  );
 }
-    
-Stream<PaypalCardPaymentRequestResultEvent> paypalCardPaymentRequestResultEvent( {String instanceName = ''}) {
+
+Stream<PaypalCardPaymentRequestResultEvent>
+paypalCardPaymentRequestResultEvent({String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
-  final EventChannel paypalCardPaymentRequestResultEventChannel =
-      EventChannel('dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentRequestResultEventChannelApi.paypalCardPaymentRequestResultEvent$instanceName', pigeonMethodCodec);
-  return paypalCardPaymentRequestResultEventChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as PaypalCardPaymentRequestResultEvent;
-  });
+  final EventChannel paypalCardPaymentRequestResultEventChannel = EventChannel(
+    'dev.flutter.pigeon.paypal_payment_flutter.PaypalPaymentRequestResultEventChannelApi.paypalCardPaymentRequestResultEvent$instanceName',
+    pigeonMethodCodec,
+  );
+  return paypalCardPaymentRequestResultEventChannel
+      .receiveBroadcastStream()
+      .map((dynamic event) {
+        return event as PaypalCardPaymentRequestResultEvent;
+      });
 }
-    

@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'paypal_payment_flutter'
-  s.version          = '0.0.2'
+  s.version          = '0.0.3'
   s.summary          = 'A Flutter plugin that enables seamless PayPal payment processing and integration within Flutter apps.'
   s.description      = <<-DESC
 This is a flutter plugin to handle the paypal payment in flutter app.

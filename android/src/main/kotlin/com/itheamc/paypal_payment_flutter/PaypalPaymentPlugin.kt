@@ -31,8 +31,8 @@ class PaypalPaymentPlugin :
     /** The binding to the activity. */
     private var activityPluginBinding: ActivityPluginBinding? = null
 
-    /** The handler for web-based PayPal checkout. */
-    private var webCheckoutHandler: WebCheckoutHandler? = null
+    /** The handler for PayPal Payments */
+    private var paymentsHandler: PaypalPaymentsHandler? = null
 
     /** The configuration for the PayPal payment. */
     private var config: PaypalPaymentConfig = PaypalPaymentConfig()
@@ -45,8 +45,8 @@ class PaypalPaymentPlugin :
         pluginBinding = binding
         PaypalPaymentHostApi.setUp(binding.binaryMessenger, this)
 
-        webCheckoutHandler = WebCheckoutHandler(
-            config = config,
+        paymentsHandler = PaypalPaymentsHandler(
+            getConfig = { config },
             getActivity = { activity },
             getPluginBinding = { pluginBinding }
         )
@@ -61,7 +61,7 @@ class PaypalPaymentPlugin :
             environment = null
         }
         pluginBinding = null
-        webCheckoutHandler = null
+        paymentsHandler = null
     }
 
 
@@ -105,7 +105,7 @@ class PaypalPaymentPlugin :
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        webCheckoutHandler?.onResume()
+        paymentsHandler?.onResume()
     }
 
     /**
@@ -115,7 +115,7 @@ class PaypalPaymentPlugin :
      * @return True if the intent was handled, false otherwise.
      */
     override fun onNewIntent(intent: Intent): Boolean {
-        return webCheckoutHandler?.onNewIntent(intent) ?: false
+        return paymentsHandler?.onNewIntent(intent) ?: false
     }
 
     /**

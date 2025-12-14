@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../utils/logger.dart';
 import '../../widgets/paypal_checkout_page.dart';
+import '../orders/models/card_detail.dart';
 import '../orders/models/order_intent.dart';
 import '../orders/models/purchase_unit.dart';
+import '../orders/models/sca.dart';
 import '../orders/orders_api.dart';
 import '../payments/models/payment_intent.dart';
 import '../payments/payments_api.dart';
@@ -61,9 +63,15 @@ class CheckoutApi {
   }
 
   /// Handles the complete PayPal Checkout flow from:
-  /// 1. Creating an order
-  /// 2. Starting native checkout (PayPal UI)
-  /// 3. Capturing or Authorizing the order after approval
+  ///
+  /// 1️⃣ Create Order
+  /// 2️⃣ Launch PayPal Native Web Checkout (user approves payment)
+  /// 3️⃣ Handled results from native:
+  ///       - success → capture / authorize order
+  ///       - cancel  → call onError("Checkout canceled")
+  ///       - failure → call onError(reason)
+  /// 4️⃣ Capture / Authorize order
+  /// 5️⃣ Return success or error
   ///
   /// This method abstracts the entire PayPal ORDER → CHECKOUT → CAPTURE/AUTHORIZE flow.
   ///
@@ -74,17 +82,6 @@ class CheckoutApi {
   /// - [onInitiated]: Called immediately when the process starts (loading state).
   /// - [onSuccess]: Called when the order is successfully completed (captured/authorized).
   /// - [onError]: Called when any step of the flow fails.
-  ///
-  /// PayPal Flow Steps:
-  /// ------------------
-  /// 1️⃣ Create Order (server or PayPal SDK)
-  /// 2️⃣ Launch PayPal Native Checkout (user approves payment)
-  /// 3️⃣ User returns:
-  ///       - success → capture / authorize order
-  ///       - cancel  → call onError("Checkout canceled")
-  ///       - failure → call onError(reason)
-  /// 4️⃣ Capture / Authorize order
-  /// 5️⃣ Return success or error
   ///
   Future<void> checkoutOrder({
     OrderIntent intent = .capture,
@@ -116,7 +113,7 @@ class CheckoutApi {
           }
 
           // STEP 3: Start PayPal Native Checkout UI
-          _orders.startNativeCheckout(
+          _orders.initiateWebPaymentRequest(
             orderId: orderId,
             onError: onError,
 
@@ -136,10 +133,7 @@ class CheckoutApi {
             onSuccess: (orderId, payerId) async {
               // Ensure required ids exist
               if (orderId == null || payerId == null) {
-                onError?.call(
-                  "Checkout succeeded but missing required data:"
-                  " orderId=$orderId, payerId=$payerId",
-                );
+                onError?.call("Checkout succeeded but missing required data");
                 return;
               }
 
@@ -192,11 +186,146 @@ class CheckoutApi {
     }
   }
 
+  /// Handles the complete PayPal Card Checkout flow from:
+  ///
+  /// 1️⃣ Create Order (server or PayPal SDK)
+  /// 2️⃣ Request paypal card payment request (user approves payment)
+  /// 3️⃣ Handled results from native:
+  ///       - success → capture / authorize order
+  ///       - cancel  → call onError("Checkout canceled")
+  ///       - failure → call onError(reason)
+  /// 4️⃣ Capture / Authorize order
+  /// 5️⃣ Return success or error
+  ///
+  /// This method abstracts the entire PayPal ORDER → CHECKOUT → CAPTURE/AUTHORIZE flow.
+  ///
+  /// Parameters:
+  /// - [intent]: Whether the payment should be captured immediately (.capture)
+  ///             or only authorized (.authorize).
+  /// - [purchaseUnits]: The list of purchase units associated with the order.
+  /// - [cardDetail]: The card details for the payment.
+  /// - [sca]: The Strong Customer Authentication (SCA) preference.
+  /// - [onInitiated]: Called immediately when the process starts (loading state).
+  /// - [onSuccess]: Called when the order is successfully completed (captured/authorized).
+  /// - [onError]: Called when any step of the flow fails.
+  ///
+  Future<void> checkoutOrderWithCard({
+    OrderIntent intent = .capture,
+    required List<PurchaseUnit> purchaseUnits,
+    required CardDetail cardDetail,
+    SCA sca = .whenRequired,
+    void Function()? onInitiated,
+    void Function(String orderId)? onSuccess,
+    void Function(String? error)? onError,
+  }) async {
+    try {
+      // STEP 1: Notify that card checkout has started (useful for showing loading)
+      onInitiated?.call();
+
+      // STEP 2: Create the PayPal Order
+      await _orders.createOrder(
+        intent: intent,
+        purchaseUnits: purchaseUnits,
+        onError: onError,
+
+        // When order creation succeeds:
+        onSuccess: (order) async {
+          final orderId = order.id;
+
+          // If no orderId is returned, fail early.
+          if (orderId == null) {
+            onError?.call(
+              "Order creation succeeded but no orderId was returned.",
+            );
+            return;
+          }
+
+          // STEP 3: Start PayPal Native Card Payment Checkout Request
+          _orders.initiateCardPaymentRequest(
+            orderId: orderId,
+            cardDetail: cardDetail,
+            sca: sca,
+            onError: onError,
+
+            // When the checkout returns a failure
+            onFailure: (orderId, reason, code, correlationId) {
+              onError?.call(reason);
+            },
+
+            // When user cancels the card payment request
+            onCancel: (orderId) {
+              onError?.call(
+                "Card payment canceled${orderId != null ? " | orderId: $orderId" : ""}",
+              );
+            },
+
+            // When user approves payment successfully
+            onSuccess:
+                (orderId, status, didAttemptThreeDSecureAuthentication) async {
+                  // Ensure required ids exist
+                  if (orderId == null) {
+                    onError?.call(
+                      "Checkout succeeded but missing required data",
+                    );
+                    return;
+                  }
+
+                  // STEP 4A: Capture order (if intent == capture)
+                  if (intent == .capture) {
+                    await _orders.captureOrder(
+                      orderId: orderId,
+                      onError: (err) {
+                        onError?.call("Capture error for $orderId: $err");
+                      },
+                      onSuccess: (capture) {
+                        // PayPal returns status "COMPLETED" when fully captured
+                        if (capture.status?.toLowerCase() == 'completed') {
+                          onSuccess?.call(orderId);
+                          return;
+                        }
+
+                        onError?.call(
+                          "Capture did not complete (status: ${capture.status})",
+                        );
+                      },
+                    );
+
+                    return;
+                  }
+
+                  // STEP 4B: Authorize order (if intent == authorize)
+                  await _orders.authorizeOrder(
+                    orderId: orderId,
+                    onError: (err) {
+                      onError?.call("Authorization error for $orderId: $err");
+                    },
+                    onSuccess: (authorize) {
+                      if (authorize.status?.toLowerCase() == 'completed') {
+                        onSuccess?.call(orderId);
+                        return;
+                      }
+
+                      onError?.call(
+                        "Authorization did not complete (status: ${authorize.status})",
+                      );
+                    },
+                  );
+                },
+          );
+        },
+      );
+    } catch (e) {
+      onError?.call("Unexpected exception: $e");
+    }
+  }
+
   /// Handles the complete PayPal v1 payment checkout flow:
-  /// 1. Create payment
-  /// 2. Redirect user to approval page
-  /// 3. Execute payment after approval
-  /// 4. Optionally capture authorized or order-based payments
+  ///
+  /// 1️⃣ Create Payment
+  /// 2️⃣ Redirect user to approval page
+  /// 3️⃣ Execute payment after approval
+  /// 4️⃣ Optionally capture authorized or order-based payments
+  /// 5️⃣ Return success or error
   ///
   /// This wrapper ensures proper callback routing and meaningful error reporting.
   ///

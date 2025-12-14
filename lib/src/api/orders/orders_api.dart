@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'models/card_detail.dart';
 import 'models/funding_source.dart';
 import 'models/order_intent.dart';
 import '../../network/http_exception.dart';
@@ -11,6 +12,7 @@ import 'models/responses/authorize_order_response.dart' hide PurchaseUnit;
 import 'models/responses/capture_order_response.dart' hide PurchaseUnit;
 import 'models/responses/order_create_response.dart';
 import 'models/purchase_unit.dart';
+import 'models/sca.dart';
 
 /// Manages operations related to PayPal orders.
 ///
@@ -24,12 +26,19 @@ class OrdersApi {
   ///
   final PaypalHttpService _httpService;
 
-  /// An instance of the host API for native PayPal web checkout functionality.
+  /// An instance of the host API for native PayPal Web Payment functionality.
   ///
   /// This is used to communicate with the native platform (iOS/Android)
   /// to initiate the web-based payment flow.
   ///
-  final PayPalPaymentWebCheckoutHostApi _webCheckoutHostApi;
+  final PaypalWebPaymentHostApi _webPaymentHostApi;
+
+  /// An instance of the host API for native PayPal Card Payment functionality.
+  ///
+  /// This is used to communicate with the native platform (iOS/Android)
+  /// to initiate the card payment flow.
+  ///
+  final PaypalCardPaymentHostApi _cardPaymentHostApi;
 
   /// A private constructor to prevent direct instantiation from outside the class.
   ///
@@ -38,7 +47,8 @@ class OrdersApi {
   ///
   OrdersApi._()
     : _httpService = PaypalHttpService.instance,
-      _webCheckoutHostApi = PayPalPaymentWebCheckoutHostApi();
+      _webPaymentHostApi = PaypalWebPaymentHostApi(),
+      _cardPaymentHostApi = PaypalCardPaymentHostApi();
 
   /// The internal, static instance of the [OrdersApi] class.
   ///
@@ -210,7 +220,7 @@ class OrdersApi {
     }
   }
 
-  /// Initiates the PayPal web checkout flow for a given order.
+  /// Initiates the PayPal web payment checkout flow for a given order.
   ///
   /// This method starts the web-based payment process on the native side.
   /// It takes an [orderId] and provides callback functions to handle the
@@ -228,7 +238,7 @@ class OrdersApi {
   ///   flow. It receives the `orderId`.
   /// - [onError]: A callback function invoked when a local or unexpected error
   ///   occurs within the SDK during the process. It receives an `error` message.
-  Future<void> startNativeCheckout({
+  Future<void> initiateWebPaymentRequest({
     required String orderId,
     FundingSource fundingSource = .paypal,
     void Function(String? orderId, String? payerId)? onSuccess,
@@ -243,28 +253,117 @@ class OrdersApi {
     void Function(String? error)? onError,
   }) async {
     try {
-      // Calls the native side to start the web checkout UI.
-      await _webCheckoutHostApi.startCheckout(orderId, fundingSource.name);
+      // Calls the native side to initiate the web payment checkout request.
+      await _webPaymentHostApi.initiatePaymentRequest(
+        orderId,
+        fundingSource.name,
+      );
 
       // Retrieves the stream of events from the native checkout flow.
-      final event = payPalWebCheckoutResultEvent();
+      final event = paypalWebPaymentRequestResultEvent();
 
       // Listen for events from the native side to determine the outcome.
       event.listen(
         (event) {
           switch (event) {
-            case PayPalWebCheckoutSuccessResultEvent():
+            case PaypalWebPaymentRequestSuccessResultEvent():
               onSuccess?.call(event.orderId, event.payerId);
-            case PayPalWebCheckoutFailureResultEvent():
+            case PaypalWebPaymentRequestFailureResultEvent():
               onFailure?.call(
                 event.orderId,
                 event.reason,
                 event.code,
                 event.correlationId,
               );
-            case PayPalWebCheckoutCanceledResultEvent():
+            case PaypalWebPaymentRequestCanceledResultEvent():
               onCancel?.call(event.orderId);
-            case PayPalWebCheckoutErrorResultEvent():
+            case PaypalWebPaymentRequestErrorResultEvent():
+              onError?.call(event.error);
+          }
+        },
+        onError: (error) {
+          // Handle any errors that occur on the event stream itself.
+          onError?.call(error.toString());
+        },
+      );
+    } catch (e) {
+      // Catches any initial errors thrown when trying to start the checkout.
+      onError?.call(e.toString());
+    }
+  }
+
+  /// Initiates a credit or debit card payment for a given order.
+  ///
+  /// This method orchestrates the card payment flow by communicating with the
+  /// native platform. It listens for outcomes such as success, failure, cancellation,
+  /// or errors during the process.
+  ///
+  /// - [orderId]: The ID of the order for which the payment is being made. Required.
+  /// - [cardDetail]: An object containing the credit or debit card details. Required.
+  /// - [sca]: Specifies the Strong Customer Authentication (SCA) preference.
+  ///   Defaults to `.whenRequired`, meaning SCA will be performed only when mandated.
+  /// - [onSuccess]: A callback invoked upon a successful card payment. It provides
+  ///   the `orderId`, the final `status` of the order, and a boolean indicating if
+  ///   3D Secure authentication was attempted.
+  /// - [onFailure]: A callback invoked if the payment fails on PayPal's end. It
+  ///    provides the `orderId`, a `reason` for the failure, an error `code`, and a
+  ///    `correlationId` for debugging.
+  /// - [onCancel]: A callback invoked if the user cancels the payment process.
+  ///   It provides the `orderId`.
+  /// - [onError]: A callback invoked for any local SDK errors or unexpected issues
+  ///   that occur during the process. It provides an `error` message.
+  ///
+  Future<void> initiateCardPaymentRequest({
+    required String orderId,
+    required CardDetail cardDetail,
+    SCA sca = .whenRequired,
+    void Function(
+      String? orderId,
+      String? status,
+      bool didAttemptThreeDSecureAuthentication,
+    )?
+    onSuccess,
+    void Function(
+      String? orderId,
+      String reason,
+      int code,
+      String? correlationId,
+    )?
+    onFailure,
+    void Function(String? orderId)? onCancel,
+    void Function(String? error)? onError,
+  }) async {
+    try {
+      // Calls the native side to initiate the card payment checkout request.
+      await _cardPaymentHostApi.initiatePaymentRequest(
+        orderId,
+        cardDetail.toCardData,
+        sca.name,
+      );
+
+      // Retrieves the stream of events from the native checkout flow.
+      final event = paypalCardPaymentRequestResultEvent();
+
+      // Listen for events from the native side to determine the outcome.
+      event.listen(
+        (event) {
+          switch (event) {
+            case PaypalCardPaymentRequestSuccessResultEvent():
+              onSuccess?.call(
+                event.orderId,
+                event.status,
+                event.didAttemptThreeDSecureAuthentication,
+              );
+            case PaypalCardPaymentRequestFailureResultEvent():
+              onFailure?.call(
+                event.orderId,
+                event.reason,
+                event.code,
+                event.correlationId,
+              );
+            case PaypalCardPaymentRequestCanceledResultEvent():
+              onCancel?.call(event.orderId);
+            case PaypalCardPaymentRequestErrorResultEvent():
               onError?.call(event.error);
           }
         },

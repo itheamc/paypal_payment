@@ -117,7 +117,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               }
               _updateStatus("Starting Native Checkout for $orderId...");
               _formattedResponse = '';
-              PaypalPayment.instance.orders.startNativeCheckout(
+              PaypalPayment.instance.orders.initiateWebPaymentRequest(
                 orderId: orderId,
                 onSuccess: (oId, payerId) {
                   _updateStatus(

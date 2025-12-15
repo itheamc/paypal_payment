@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+
+import '../web/paypal_web_helper.dart';
 
 import 'models/card_detail.dart';
 import 'models/funding_source.dart';
@@ -95,6 +98,10 @@ class OrdersApi {
       final payload = {
         "intent": intent.name.toUpperCase(),
         "purchase_units": purchaseUnits.map((e) => e.toJson()).toList(),
+        "application_context": {
+          "return_url": PaypalWebHelper.instance.getReturnUrl(),
+          "cancel_url": PaypalWebHelper.instance.getReturnUrl(),
+        },
       };
 
       onPreRequest?.call(endpoint, payload);
@@ -114,6 +121,27 @@ class OrdersApi {
       onError?.call(HttpException.fromResponse(response).message);
     } on HttpException catch (e) {
       onError?.call(e.message);
+    } catch (e) {
+      onError?.call(e.toString());
+    }
+  }
+
+  /// Show order details
+  Future<void> showOrderDetails({
+    required String orderId,
+    void Function(OrderCreateResponse)? onSuccess,
+    void Function(String? error)? onError,
+  }) async {
+    try {
+      final endpoint = '/v2/checkout/orders/$orderId';
+      final response = await _httpService.get(endpoint, isAuthenticated: true);
+
+      if (ResponseValidator.isValidResponse(response)) {
+        final decoded = jsonDecode(response.body);
+        onSuccess?.call(OrderCreateResponse.fromJson(decoded));
+        return;
+      }
+      onError?.call(HttpException.fromResponse(response).message);
     } catch (e) {
       onError?.call(e.toString());
     }
@@ -240,6 +268,7 @@ class OrdersApi {
   ///   occurs within the SDK during the process. It receives an `error` message.
   Future<void> initiateWebPaymentRequest({
     required String orderId,
+    dynamic window, // Window object from CheckoutApi
     FundingSource fundingSource = .paypal,
     void Function(String? orderId, String? payerId)? onSuccess,
     void Function(
@@ -253,6 +282,49 @@ class OrdersApi {
     void Function(String? error)? onError,
   }) async {
     try {
+      if (kIsWeb) {
+        if (window == null) {
+          onError?.call("Web window is required for payment request");
+          return;
+        }
+
+        // 1. Get Details to find approval link
+        await showOrderDetails(
+          orderId: orderId,
+          onSuccess: (order) async {
+            final links = order.links;
+            final approvalLink = links
+                ?.firstWhere((element) => element.rel == "approve")
+                .href;
+
+            if (approvalLink == null) {
+              onError?.call("Approval link not found");
+              return;
+            }
+
+            // 2. Redirect Popup
+            PaypalWebHelper.instance.redirectPopup(window, approvalLink);
+
+            // 3. Monitor Popup
+            try {
+              final payerId = await PaypalWebHelper.instance.monitorPopup(
+                window,
+              );
+              if (payerId != null) {
+                onSuccess?.call(orderId, payerId);
+              } else {
+                onCancel?.call(orderId);
+              }
+            } catch (e) {
+              onError?.call(e.toString());
+            }
+          },
+          onError: (err) {
+            onError?.call(err.toString());
+          },
+        );
+        return;
+      }
       // Calls the native side to initiate the web payment checkout request.
       await _webPaymentHostApi.initiatePaymentRequest(
         orderId,

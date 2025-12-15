@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'api/checkout/checkout_api.dart';
 import 'config/env/env.dart';
 import 'config/env/env_keys.dart';
@@ -104,10 +105,12 @@ class PaypalPayment {
       PaypalHttpService.instance.configuration = configuration;
 
       // Initializing PaypalPaymentHostApi
-      await _hostApi.initialize(
-        configuration.clientId,
-        configuration.environment.name,
-      );
+      if (!kIsWeb) {
+        await _hostApi.initialize(
+          configuration.clientId,
+          configuration.environment.name,
+        );
+      }
     } catch (e) {
       Logger.logError(e.toString());
     }

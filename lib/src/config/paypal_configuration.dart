@@ -21,6 +21,9 @@ class PaypalConfiguration {
   /// Change to [Environment.live] for production transactions.
   final Environment environment;
 
+  /// The currency code to use for transactions (e.g., 'USD', 'EUR').
+  final String? currency;
+
   /// Creates a new instance of [PaypalConfiguration].
   ///
   /// Requires a [clientId] and [clientSecret].
@@ -29,5 +32,6 @@ class PaypalConfiguration {
     required this.clientId,
     required this.clientSecret,
     this.environment = .sandbox,
+    this.currency,
   });
 }

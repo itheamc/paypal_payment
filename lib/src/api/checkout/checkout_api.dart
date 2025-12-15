@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import '../web/paypal_web_helper.dart';
 
 import '../../utils/logger.dart';
 import '../../widgets/paypal_checkout_page.dart';
@@ -94,6 +96,12 @@ class CheckoutApi {
       // STEP 1: Notify that checkout has started (useful for showing loading)
       onInitiated?.call();
 
+      // WEB: Open popup immediately to satisfy user gesture requirement
+      dynamic webWindow;
+      if (kIsWeb) {
+        webWindow = PaypalWebHelper.instance.openPopup();
+      }
+
       // STEP 2: Create the PayPal Order
       await _orders.createOrder(
         intent: intent,
@@ -115,6 +123,7 @@ class CheckoutApi {
           // STEP 3: Start PayPal Native Checkout UI
           _orders.initiateWebPaymentRequest(
             orderId: orderId,
+            window: webWindow,
             onError: onError,
 
             // When the checkout UI returns a failure
